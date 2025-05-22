@@ -1,0 +1,40 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:SBC.WPF.Models"
+    xmlns:vm="using:SBC.WPF.ViewModels"
+    x:DataType="vm:MainWindowViewModel">
+
+    <DataTemplate x:Key="NavItemTemplate" DataType="models:TestGroup">
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <TextBlock
+                Margin="5,0,0,0"
+                Padding="5,0,15,0"
+                VerticalAlignment="Center"
+                FontWeight="Medium"
+                Foreground="{DynamicResource ListItemForegroundBrush}"
+                Text="{Binding Name}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <Style x:Key="AppButtonStyle" Selector="Button">
+        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}" />
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="MinWidth" Value="120" />
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="0"
+                    CornerRadius="3">
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

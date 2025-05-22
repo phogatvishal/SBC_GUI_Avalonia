@@ -1,0 +1,225 @@
+{
+  "test_groups": [
+    {
+      "name": "Interface Tests",
+      "type": "Group_Interface",
+      "description": "",
+      "testcases": [
+        {
+          "id": "PCIE_GEN4_X8_VPX",
+          "name": "PCIE_GEN4_X8_VPX",
+          "description": "",
+          "bit": 0,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_SWITCH_X8_GEN3",
+          "name": "PCIE_SWITCH_X8_GEN3",
+          "description": "",
+          "bit": 1,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_SWITCH_VPX_X4_GEN3_CH0",
+          "name": "PCIE_SWITCH_VPX_X4_GEN3_CH0",
+          "description": "",
+          "bit": 2,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_SWITCH_VPX_X4_GEN3_CH1",
+          "name": "PCIE_SWITCH_VPX_X4_GEN3_CH1",
+          "description": "",
+          "bit": 3,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_SWITCH_XMC_X8_GEN3_CH0",
+          "name": "PCIE_SWITCH_XMC_X8_GEN3_CH0",
+          "description": "",
+          "bit": 4,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_SWITCH_XMC_X8_GEN3_CH1",
+          "name": "PCIE_SWITCH_XMC_X8_GEN3_CH1",
+          "description": "",
+          "bit": 5,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_FPGA_GEN3_X4",
+          "name": "PCIE_FPGA_GEN3_X4",
+          "description": "",
+          "bit": 6,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_FPGA_GEN3_X8",
+          "name": "PCIE_FPGA_GEN3_X8",
+          "description": "",
+          "bit": 7,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "PCIE_ETHERNET_CONTROLLER_1GBPS",
+          "name": "PCIE_ETHERNET_CONTROLLER_1GBPS",
+          "description": "",
+          "bit": 8,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_40GBASE_INTERFACE",
+          "name": "XEON_40GBASE_INTERFACE",
+          "description": "",
+          "bit": 9,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_100GBASE_INTERFACE",
+          "name": "XEON_100GBASE_INTERFACE",
+          "description": "",
+          "bit": 10,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "SATA_NAND_FLASH",
+          "name": "SATA_NAND_FLASH",
+          "description": "",
+          "bit": 11,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "SATA_VPX_CH0",
+          "name": "SATA_VPX_CH0",
+          "description": "",
+          "bit": 12,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "SATA_VPX_CH1",
+          "name": "SATA_VPX_CH1",
+          "description": "",
+          "bit": 13,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "SATA_VPX_CH2",
+          "name": "SATA_VPX_CH2",
+          "description": "",
+          "bit": 14,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "SATA_VPX_M.2_INTERFACE",
+          "name": "SATA_VPX_M.2_INTERFACE",
+          "description": "",
+          "bit": 15,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "LPC_INTERFACE_TEST",
+          "name": "LPC_INTERFACE_TEST",
+          "description": "",
+          "bit": 16,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "UART_INTERFACE_BETWEEN_XEON_AND_IPMC",
+          "name": "UART_INTERFACE_BETWEEN_XEON_AND_IPMC",
+          "description": "",
+          "bit": 17,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "I2C_INTERFACE_BETWEEN_XEON_AND_IPMC",
+          "name": "I2C_INTERFACE_BETWEEN_XEON_AND_IPMC",
+          "description": "",
+          "bit": 18,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_EMMC_TEST",
+          "name": "XEON_EMMC_TEST",
+          "description": "",
+          "bit": 19,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_VPX_UART",
+          "name": "XEON_VPX_UART",
+          "description": "",
+          "bit": 20,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_USB_INTERFACE",
+          "name": "XEON_USB_INTERFACE",
+          "description": "",
+          "bit": 21,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_VPX_USB_CH1",
+          "name": "XEON_VPX_USB_CH1",
+          "description": "",
+          "bit": 22,
+          "default_selected": false,
+          "compatible": "v1.0"
+        },
+        {
+          "id": "XEON_VPX_USB_CH2",
+          "name": "XEON_VPX_USB_CH2",
+          "description": "",
+          "bit": 23,
+          "default_selected": false,
+          "compatible": "v1.0"
+        }
+      ]
+    },
+    {
+      "name": "IPMC Tests",
+      "type": "Group_IPMC",
+      "description": "",
+      "testcases": [
+      ]
+    },
+    {
+      "name": "PBIT Tests",
+      "type": "Group_PBIT",
+      "description": "",
+      "testcases": [
+        {
+          "id": "PBIT_DATA",
+          "name": "PBIT_DATA",
+          "description": "",
+          "bit": 0,
+          "default_selected": false,
+          "compatible": "v1.0"
+        }
+      ]
+    }
+  ]
+}
