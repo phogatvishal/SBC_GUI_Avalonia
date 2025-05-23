@@ -7,6 +7,8 @@ using SBC.WPF.ViewModels;
 using System.Linq;
 using Avalonia.Styling;
 using SBC.WPF.Interfaces;
+using Avalonia.Logging;
+using Avalonia.Threading;
 
 namespace SBC.WPF.Views
 {
@@ -15,8 +17,9 @@ namespace SBC.WPF.Views
 		private WindowState _lastWindowState;
 		private bool _isCustomMaximized = false;
 		private PixelRect _previousBounds; // Use PixelRect instead of WPF's Rect
+		private readonly ILoggerService _logger;
 
-		public MainWindow(MainWindowViewModel mainWindowViewModel)
+		public MainWindow(MainWindowViewModel mainWindowViewModel, ILoggerService logger)
 		{
 			InitializeComponent();
 			DataContext = mainWindowViewModel;
@@ -38,6 +41,13 @@ namespace SBC.WPF.Views
 					}
 				}
 			};
+			_logger = logger;
+
+			Dispatcher.UIThread.Post(() =>
+			{
+				LogScrollViewer?.ScrollToEnd();
+			});
+
 		}
 
 		private void MaximizeButton_Click(object? sender, RoutedEventArgs e)

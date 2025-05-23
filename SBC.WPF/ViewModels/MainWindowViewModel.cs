@@ -33,6 +33,8 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private ObservableCollection<TestGroup> _testGroups = new();
 
+		public ObservableCollection<LogLine> LogLines { get; } = new();
+
 		[ObservableProperty]
 		private bool? _isSelected;
 
@@ -48,6 +50,9 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private string _logDocument = string.Empty;
 
+		[ObservableProperty]
+		private bool? _isAllSelected;
+
 		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider, ILoggerService logger)
         {
 			_testLoaderService = testLoaderService;
@@ -59,7 +64,7 @@ namespace SBC.WPF.ViewModels
 			Initialize();
 
 			_interopService.Connect(
-			 InterfaceConnection.INTERFACE_ETHERNET, "COM3", 115200, "MyProtocol");
+			InterfaceConnection.INTERFACE_ETHERNET, "COM3", 115200, "MyProtocol");
 		}
 
 		private async void Initialize()
@@ -89,46 +94,45 @@ namespace SBC.WPF.ViewModels
 			SelectedTestGroup = TestGroups.FirstOrDefault();
 		}
 
-
 		[RelayCommand]
 		private async Task RunTestAsync()
 		{
 			if (SelectedTestGroup == null)
 			{
-				//Log("No tab selected.");
+				Log("No tab selected.");
 				return;
 			}
 
 			var selectedTests = SelectedTestGroup.Testcases.Where(t => t.IsSelected).ToList();
 			if (!selectedTests.Any())
 			{
-				//Log($"No test cases selected in '{SelectedTestGroup.Name}'");
+				Log($"No test cases selected in '{SelectedTestGroup.Name}'");
 				return;
 			}
 
 			var bitMask = GetTestBitmask(SelectedTestGroup.Name);
-			//Log($"Bit Mask: {bitMask}");
+			Log($"Bit Mask: {bitMask}");
 
 			for (int i = 1; i <= SelectedIteration; i++)
 			{
-				//Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...");
+				Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...");
 				await Task.Delay(10); // Let UI update
 
 				foreach (var test in selectedTests)
 				{
-					//Log($"  - Executing: {test.Name}");
+					Log($"  - Executing: {test.Name}");
 					await Task.Delay(1); // Simulate small delay
 				}
 			}
 
-			//Log("Test execution finished.");
+			Log("Test execution finished.");
 
 			var result = _interopService.RunTest(
 				GetConnectionFromType(SelectedTestGroup.Type),
 				GetGroupFromTestType(SelectedTestGroup.Type),
 				bitMask);
 
-			//Log(result.ToString());
+			Log(result.ToString());
 			UpdateTestResults(result.ToString(),  SelectedTestGroup.Testcases);
 		}
 
@@ -145,8 +149,8 @@ namespace SBC.WPF.ViewModels
 				string testName = parts[0].Trim();
 				string status = parts[1].Trim().ToUpper();
 
-				var testCase = testCases.FirstOrDefault(tc =>
-					string.Equals(tc.Id?.Replace("_", " "), testName, StringComparison.OrdinalIgnoreCase));
+				var testCase = testCases.FirstOrDefault(); //(tc =>
+					//string.Equals(tc.Id?.Replace("_", " "), testName, StringComparison.OrdinalIgnoreCase));
 
 				if (testCase != null)
 				{
@@ -155,11 +159,45 @@ namespace SBC.WPF.ViewModels
 			}
 		}
 
-		[RelayCommand]
-		private void OnTestCaseSelectionChanged()
+		partial void OnSelectedTestGroupChanged(TestGroup value)
 		{
-			// Optional: still here in case you want external awareness
-			// of changes, but not strictly required
+			UpdateSelectAllCheckbox();
+		}
+
+		partial void OnIsAllSelectedChanged(bool? oldValue, bool? newValue)
+		{
+			SetAllTestCaseSelection(newValue);
+		}
+
+		private void SetAllTestCaseSelection(bool? isSelected)
+		{
+			if (!isSelected.HasValue)  // Check if the nullable bool has a value
+				return;
+
+			bool isCheckboxSelected = isSelected.Value;
+
+			// Set IsSelected for each TestCase in the selected TestGroup
+			foreach (var testCase in SelectedTestGroup.Testcases)
+			{
+				testCase.IsSelected = isCheckboxSelected;
+			}
+		}
+
+		private void UpdateSelectAllCheckbox()
+		{
+			// When TestGroup changes, reset IsAllSelected checkbox based on the state of the test cases.
+			if (SelectedTestGroup.Testcases.All(tc => tc.IsSelected))
+			{
+				IsAllSelected = true;
+			}
+			else if (SelectedTestGroup.Testcases.All(tc => tc.IsSelected == false))
+			{
+				IsAllSelected = false;
+			}
+			else
+			{
+				IsAllSelected = null;
+			}
 		}
 
 		private InterfaceConnection GetConnectionFromType(string type)
@@ -219,7 +257,17 @@ namespace SBC.WPF.ViewModels
 		private void Log(string message)
 		{
 			_logger.Log(message);
-			//_logDocument += message + Environment.NewLine;
+
+			// Color logic example
+			var color = message.Contains("FAIL", StringComparison.OrdinalIgnoreCase) ? "Red"
+					  : message.Contains("PASS", StringComparison.OrdinalIgnoreCase) ? "Green"
+					  : "White";
+
+			LogLines.Add(new LogLine
+			{
+				Message = message,
+				Color = color
+			});
 		}
 	}
 }

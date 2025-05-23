@@ -70,6 +70,7 @@
                     VerticalAlignment="Center"
                     FontFamily="Montserrat"
                     FontSize="16"
+                    Foreground="White"
                     Text="Single Board Computer Test Application" />
 
                 <!--  Minimize Btn  -->
@@ -80,6 +81,7 @@
                     Margin="0,0,10,0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
                     Click="MinimizeButton_Click">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
@@ -255,24 +257,26 @@
                 <Border
                     Grid.Column="1"
                     Margin="10,0,0,0"
-                    Padding="5"
-                    Background="White"
+                    Padding="10"
+                    Background="Black"
                     BorderBrush="Gray"
-                    BorderThickness="0.5">
+                    BorderThickness="1">
 
-                    <avaloniaEdit:TextEditor
-                        Name="LogRichTextBox"
-                        Background="White"
-                        BorderThickness="0"
-                        Focusable="True"
-                        FontFamily="Consolas"
-                        FontSize="14"
-                        Foreground="Black"
-                        HorizontalScrollBarVisibility="Auto"
-                        IsReadOnly="True"
-                        ShowLineNumbers="True"
-                        SyntaxHighlighting="C#"
-                        VerticalScrollBarVisibility="Auto" />
+                    <ScrollViewer x:Name="LogScrollViewer" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding LogLines}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Margin="0,1,0,1"
+                                        Background="Black"
+                                        FontFamily="Consolas"
+                                        FontSize="14"
+                                        Foreground="{Binding Color}"
+                                        Text="{Binding Message}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Border>
             </Grid>
 
