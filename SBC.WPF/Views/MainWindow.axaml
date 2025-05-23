@@ -146,33 +146,45 @@
         <!--  Left Panel navigation  -->
         <Border Grid.Row="1" Background="#F1F1F1">
             <Grid>
-                <ListBox
-                    Height="300"
-                    Margin="5,5,7,5"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Top"
-                    Background="Transparent"
+                <ListBox Margin="5,10,7,5"
                     ItemTemplate="{StaticResource NavItemTemplate}"
                     ItemsSource="{Binding TestGroups}"
-                    SelectedItem="{Binding SelectedTestGroup}">
+                    SelectedItem="{Binding SelectedTestGroup}"
+					Background="Transparent">
                     <ListBox.Styles>
-                        <Style Selector="ListBoxItem">
-                            <Setter Property="Padding" Value="10 6" />
-                            <Setter Property="Cursor" Value="Hand" />
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Foreground" Value="Black" />
-                        </Style>
+						<!-- Base Style -->
+						<Style Selector="ListBoxItem">
+							<Setter Property="Padding" Value="10,6"/>
+							<Setter Property="Cursor" Value="Hand"/>
+							<Setter Property="MinHeight" Value="32"/>
+							<Setter Property="HorizontalContentAlignment" Value="Left"/>
+							<Setter Property="VerticalContentAlignment" Value="Center"/>
+							<Setter Property="Template">
+								<ControlTemplate>
+									<Border
+										Name="PART_Border"
+										Background="{TemplateBinding Background}"
+										Padding="{TemplateBinding Padding}"
+										CornerRadius="6">
+										<ContentPresenter
+											Content="{TemplateBinding Content}"
+											ContentTemplate="{TemplateBinding ContentTemplate}" />
+									</Border>
+								</ControlTemplate>
+							</Setter>
+						</Style>
 
-                        <Style Selector="ListBoxItem:selected">
-                            <Setter Property="Foreground" Value="White" />
-                            <Setter Property="Background" Value="#3374DB" />
-                        </Style>
+						<!-- Hover Style -->
+						<Style Selector="ListBoxItem:pointerover">
+							<Setter Property="Foreground" Value="{StaticResource ButtonBackgroundColor}"/>
+						</Style>
 
-                        <Style Selector="ListBoxItem:pointerover">
-                            <Setter Property="Background" Value="#3374DB" />
-                        </Style>
-                    </ListBox.Styles>
-
+						<!-- Selected Style -->
+						<Style Selector="ListBoxItem:selected">
+							<Setter Property="Background" Value="{StaticResource ButtonBackgroundColor}"/>
+							<Setter Property="Foreground" Value="White"/>
+						</Style>
+					</ListBox.Styles>
                 </ListBox>
             </Grid>
         </Border>

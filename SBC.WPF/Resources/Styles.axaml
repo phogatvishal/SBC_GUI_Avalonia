@@ -5,36 +5,34 @@
     xmlns:vm="using:SBC.WPF.ViewModels"
     x:DataType="vm:MainWindowViewModel">
 
-    <DataTemplate x:Key="NavItemTemplate" DataType="models:TestGroup">
-        <StackPanel Margin="5" Orientation="Horizontal">
-            <TextBlock
-                Margin="5,0,0,0"
-                Padding="5,0,15,0"
-                VerticalAlignment="Center"
-                FontWeight="Medium"
-                Foreground="{DynamicResource ListItemForegroundBrush}"
-                Text="{Binding Name}" />
-        </StackPanel>
-    </DataTemplate>
+	<DataTemplate x:Key="NavItemTemplate" DataType="models:TestGroup">
+		<Border
+			Background="{Binding Background, RelativeSource={RelativeSource AncestorType=ListBoxItem}}">
+			<TextBlock
+				FontWeight="Medium"
+				Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+				Text="{Binding Name}" />
+		</Border>
+	</DataTemplate>
 
-    <Style x:Key="AppButtonStyle" Selector="Button">
-        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}" />
-        <Setter Property="Padding" Value="10,5" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="MinWidth" Value="120" />
-        <Setter Property="Height" Value="25" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border
+	<Style x:Key="AppButtonStyle" Selector="Button">
+		<Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
+		<Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}" />
+		<Setter Property="Padding" Value="10,5" />
+		<Setter Property="FontSize" Value="14" />
+		<Setter Property="MinWidth" Value="120" />
+		<Setter Property="Height" Value="25" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="0"
                     CornerRadius="3">
-                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Border>
-            </ControlTemplate>
-        </Setter>
-    </Style>
+					<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</Style>
 
 </ResourceDictionary>

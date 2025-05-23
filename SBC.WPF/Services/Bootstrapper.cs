@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Extensions.DependencyInjection;
 using SBC.WPF.Interfaces;
 using SBC.WPF.ViewModels;
@@ -39,8 +40,13 @@ namespace SBC.WPF.Services
 			// App startup
 			desktop.MainWindow = ServiceProvider.GetRequiredService<MainWindow>();
 
-			// Register exception handlers (optional, since it can now be done in App.axaml.cs)
-			var exceptionHandler = ServiceProvider.GetRequiredService<IExceptionHandlerService>();
+
+#if DEBUG
+            desktop.MainWindow.AttachDevTools(); // 🔍 Enables Avalonia DevTools
+#endif
+
+            // Register exception handlers (optional, since it can now be done in App.axaml.cs)
+            var exceptionHandler = ServiceProvider.GetRequiredService<IExceptionHandlerService>();
 			exceptionHandler.RegisterGlobalHandlers();
 		}
 	}
