@@ -9,6 +9,7 @@ using Avalonia.Styling;
 using SBC.WPF.Interfaces;
 using Avalonia.Logging;
 using Avalonia.Threading;
+using System.Threading.Tasks;
 
 namespace SBC.WPF.Views
 {
@@ -18,11 +19,13 @@ namespace SBC.WPF.Views
 		private bool _isCustomMaximized = false;
 		private PixelRect _previousBounds; // Use PixelRect instead of WPF's Rect
 		private readonly ILoggerService _logger;
+		private readonly MainWindowViewModel _mainWindowViewModel;
 
 		public MainWindow(MainWindowViewModel mainWindowViewModel, ILoggerService logger)
 		{
 			InitializeComponent();
 			DataContext = mainWindowViewModel;
+			_mainWindowViewModel = mainWindowViewModel;
 
 			_lastWindowState = this.WindowState;
 
@@ -131,6 +134,11 @@ namespace SBC.WPF.Views
 			WindowState = (WindowState == WindowState.Maximized)
 				? WindowState.Normal
 				: WindowState.Maximized;
+		}
+
+		private async void ExportLogs_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		{
+			await _mainWindowViewModel.ExportLogsAsync(this); // this = Window
 		}
 	}
 }

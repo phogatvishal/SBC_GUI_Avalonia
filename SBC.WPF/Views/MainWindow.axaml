@@ -146,12 +146,12 @@
         <!--  Left Panel navigation  -->
         <Border Grid.Row="1" Background="#F1F1F1">
             <Grid>
-                <ListBox Margin="5,10,7,5"
+				<ListBox Margin="5,10,7,5"
                     ItemTemplate="{StaticResource NavItemTemplate}"
                     ItemsSource="{Binding TestGroups}"
                     SelectedItem="{Binding SelectedTestGroup}"
 					Background="Transparent">
-                    <ListBox.Styles>
+					<ListBox.Styles>
 						<!-- Base Style -->
 						<Style Selector="ListBoxItem">
 							<Setter Property="Padding" Value="10,6"/>
@@ -185,7 +185,7 @@
 							<Setter Property="Foreground" Value="White"/>
 						</Style>
 					</ListBox.Styles>
-                </ListBox>
+				</ListBox>
             </Grid>
         </Border>
 
@@ -217,7 +217,8 @@
                                         BorderBrush="Black"
                                         Content="Test Cases"
                                         FontWeight="Medium"
-                                        IsChecked="{Binding IsAllSelected, Mode=TwoWay}" />
+                                        IsChecked="{Binding IsAllSelected, Mode=TwoWay}"
+                                        IsThreeState="True" />
                                     <TextBlock
                                         Grid.Column="1"
                                         Margin="0,0,22,0"
@@ -318,9 +319,11 @@
                     Margin="10,10,0,10"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
-
-                    <Button Content="Export" />
-                    <Button Margin="10,10,0,10" Content="Clear" />
+                    <Button Click="ExportLogs_Click" Content="Export" />
+                    <Button
+                        Margin="10,10,0,10"
+                        Command="{Binding ClearLogsCommand}"
+                        Content="Clear" />
                 </StackPanel>
             </Grid>
         </Grid>

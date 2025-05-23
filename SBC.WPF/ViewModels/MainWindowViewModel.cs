@@ -11,6 +11,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using Avalonia;
 
 namespace SBC.WPF.ViewModels
 {
@@ -35,8 +38,6 @@ namespace SBC.WPF.ViewModels
 
 		public ObservableCollection<LogLine> LogLines { get; } = new();
 
-		[ObservableProperty]
-		private bool? _isSelected;
 
 		[ObservableProperty]
 		private int? _selectedIteration = 1;
@@ -49,9 +50,6 @@ namespace SBC.WPF.ViewModels
 
 		[ObservableProperty]
 		private string _logDocument = string.Empty;
-
-		[ObservableProperty]
-		private bool? _isAllSelected;
 
 		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider, ILoggerService logger)
         {
@@ -159,45 +157,52 @@ namespace SBC.WPF.ViewModels
 			}
 		}
 
-		partial void OnSelectedTestGroupChanged(TestGroup value)
+		[RelayCommand]
+		public async Task ExportLogsAsync(Window? parentWindow)
 		{
-			UpdateSelectAllCheckbox();
-		}
-
-		partial void OnIsAllSelectedChanged(bool? oldValue, bool? newValue)
-		{
-			SetAllTestCaseSelection(newValue);
-		}
-
-		private void SetAllTestCaseSelection(bool? isSelected)
-		{
-			if (!isSelected.HasValue)  // Check if the nullable bool has a value
+			if (parentWindow == null)
+			{
+				Log("Export failed: Window not available.");
 				return;
+			}
 
-			bool isCheckboxSelected = isSelected.Value;
-
-			// Set IsSelected for each TestCase in the selected TestGroup
-			foreach (var testCase in SelectedTestGroup.Testcases)
+			var storage = parentWindow.StorageProvider;
+			if (storage == null || !storage.CanSave)
 			{
-				testCase.IsSelected = isCheckboxSelected;
+				Log("Export failed: File save not supported.");
+				return;
+			}
+
+			var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+			{
+				Title = "Save Logs As",
+				SuggestedFileName = "Logs.txt",
+				DefaultExtension = "txt",
+				FileTypeChoices = new[]
+				{
+			new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
+			new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+				}
+			});
+
+			if (file != null)
+			{
+				await using var stream = await file.OpenWriteAsync();
+				using var writer = new StreamWriter(stream);
+				await writer.WriteAsync(GetLogText());
+				Log($"✅ Logs saved to {file.Name}");
 			}
 		}
 
-		private void UpdateSelectAllCheckbox()
+		private string GetLogText()
 		{
-			// When TestGroup changes, reset IsAllSelected checkbox based on the state of the test cases.
-			if (SelectedTestGroup.Testcases.All(tc => tc.IsSelected))
-			{
-				IsAllSelected = true;
-			}
-			else if (SelectedTestGroup.Testcases.All(tc => tc.IsSelected == false))
-			{
-				IsAllSelected = false;
-			}
-			else
-			{
-				IsAllSelected = null;
-			}
+			return string.Join(Environment.NewLine, LogLines.Select(line => line.Message));
+		}
+
+		[RelayCommand]
+		private void ClearLogs()
+		{
+			LogLines.Clear();
 		}
 
 		private InterfaceConnection GetConnectionFromType(string type)
