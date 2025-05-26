@@ -3,8 +3,6 @@ using SBC.WPF.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace SBC.WPF.Services
 				{
 					foreach (var test in group.Testcases)
 					{
-						test.IsSelected = test.Default_Selected;
+						test.IsSelected = test.DefaultSelected;
 					}
 				}
 

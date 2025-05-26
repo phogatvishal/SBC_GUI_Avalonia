@@ -7,7 +7,12 @@ namespace SBC.WPF.Interfaces
 	{
 		event Action<string> OnNewLogLine;
 		void Log(string message);
-		string GetCurrentLog();
+		void APILog(string message);
 		Task SaveLogToFileAsync(string customPath);
+		Task SaveAPILogToFileAsync(string customPath);
+		Task<string> ExportAllAPILogsAsync();
+		Task<string> ExportCurrentAPILogsAsync();
+		void ClearCurrentAPILogs();
+		void ClearCurrentLogs();
 	}
 }

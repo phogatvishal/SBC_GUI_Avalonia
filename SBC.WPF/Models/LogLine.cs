@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avalonia.Media;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace SBC.WPF.Models
 	public class LogLine
 	{
 		public string Message { get; set; }
-		public string Color { get; set; } = "White"; // default to white text
+		public IBrush Color { get; set; } = Brushes.White;
 	}
 
 }

@@ -7,9 +7,9 @@ using SBC.WPF.ViewModels;
 using System.Linq;
 using Avalonia.Styling;
 using SBC.WPF.Interfaces;
-using Avalonia.Logging;
 using Avalonia.Threading;
-using System.Threading.Tasks;
+using SBC.WPF.Models;
+using Avalonia.Controls.Shapes;
 
 namespace SBC.WPF.Views
 {
@@ -46,11 +46,10 @@ namespace SBC.WPF.Views
 			};
 			_logger = logger;
 
-			Dispatcher.UIThread.Post(() =>
+			_logger.OnNewLogLine += (line) =>
 			{
 				LogScrollViewer?.ScrollToEnd();
-			});
-
+			};
 		}
 
 		private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
@@ -101,7 +100,7 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private void MinimizeButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		private void MinimizeButton_Click(object? sender, RoutedEventArgs e)
 		{
 			if (this is Window window)
 			{
@@ -109,7 +108,7 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private void CloseButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		private void CloseButton_Click(object? sender, RoutedEventArgs e)
 		{
 			if (this is Window window)
 			{
@@ -136,9 +135,21 @@ namespace SBC.WPF.Views
 				: WindowState.Maximized;
 		}
 
-		private async void ExportLogs_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		private async void ExportLogs_Click(object? sender, RoutedEventArgs e)
 		{
 			await _mainWindowViewModel.ExportLogsAsync(this); // this = Window
+		}
+
+		private void IsAllSelected_Click(object? sender, RoutedEventArgs e)
+		{
+			if (sender is CheckBox checkBox && checkBox.DataContext is TestGroup group)
+			{
+				// Force it to toggle between true and false manually
+				group.IsAllSelected = group.IsAllSelected == null ? false : true;
+
+				// prevent Avalonia from toggling to null on click
+				e.Handled = true;
+			}
 		}
 	}
 }

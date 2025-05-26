@@ -1,8 +1,5 @@
-﻿using Avalonia.Controls.Documents;
-using Avalonia.Logging;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SBC.WPF.Enums;
 using SBC.WPF.Interfaces;
 using SBC.WPF.Models;
 using System;
@@ -13,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using Avalonia;
+using Avalonia.Media;
 
 namespace SBC.WPF.ViewModels
 {
@@ -38,7 +35,6 @@ namespace SBC.WPF.ViewModels
 
 		public ObservableCollection<LogLine> LogLines { get; } = new();
 
-
 		[ObservableProperty]
 		private int? _selectedIteration = 1;
 
@@ -51,6 +47,9 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private string _logDocument = string.Empty;
 
+		[ObservableProperty]
+		private bool _isAllSelected;
+
 		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider, ILoggerService logger)
         {
 			_testLoaderService = testLoaderService;
@@ -59,13 +58,13 @@ namespace SBC.WPF.ViewModels
 
 			_logger = logger;
 			
-			Initialize();
+			_ = Initialize();
 
 			_interopService.Connect(
 			InterfaceConnection.INTERFACE_ETHERNET, "COM3", 115200, "MyProtocol");
 		}
 
-		private async void Initialize()
+		private async Task Initialize()
 		{
 			await LoadTestsUI();
 			await CheckConnectionStatus();
@@ -78,18 +77,19 @@ namespace SBC.WPF.ViewModels
 
 			var groups = await _testLoaderService.LoadTestGroupsAsync(jsonPath);
 
-			// Set ParentGroup reference
-			foreach (var group in groups)
+			TestGroups = new ObservableCollection<TestGroup>(groups);
+
+			foreach (var group in TestGroups)
 			{
 				foreach (var testCase in group.Testcases)
 				{
 					testCase.ParentGroup = group;
-					//testCase.OnSelectionChangedCommand = OnTestCaseSelectionChangedCommand;
+					testCase.IsSelected = false; // force unchecked
 				}
-			}
+				group.IsAllSelected = false; // force parent unchecked
 
-			TestGroups = new ObservableCollection<TestGroup>(groups);
-			SelectedTestGroup = TestGroups.FirstOrDefault();
+				SelectedTestGroup = TestGroups.FirstOrDefault();
+			}
 		}
 
 		[RelayCommand]
@@ -147,8 +147,10 @@ namespace SBC.WPF.ViewModels
 				string testName = parts[0].Trim();
 				string status = parts[1].Trim().ToUpper();
 
-				var testCase = testCases.FirstOrDefault(); //(tc =>
-					//string.Equals(tc.Id?.Replace("_", " "), testName, StringComparison.OrdinalIgnoreCase));
+				var testCase = testCases.FirstOrDefault(tc =>
+							   tc.Name?.Replace("_", "").Replace(" ", "").Equals(
+							   testName.Replace("_", "").Replace(" ", ""),
+							   StringComparison.OrdinalIgnoreCase) == true);
 
 				if (testCase != null)
 				{
@@ -190,7 +192,7 @@ namespace SBC.WPF.ViewModels
 				await using var stream = await file.OpenWriteAsync();
 				using var writer = new StreamWriter(stream);
 				await writer.WriteAsync(GetLogText());
-				Log($"✅ Logs saved to {file.Name}");
+				Log($"✅ Logs saved to {file.Name}{Environment.NewLine}{Environment.NewLine}");
 			}
 		}
 
@@ -263,15 +265,17 @@ namespace SBC.WPF.ViewModels
 		{
 			_logger.Log(message);
 
-			// Color logic example
-			var color = message.Contains("FAIL", StringComparison.OrdinalIgnoreCase) ? "Red"
-					  : message.Contains("PASS", StringComparison.OrdinalIgnoreCase) ? "Green"
-					  : "White";
+			IBrush brush = Brushes.White;
+
+			if (message.Contains("FAIL", StringComparison.OrdinalIgnoreCase))
+				brush = Brushes.Red;
+			else if (message.Contains("PASS", StringComparison.OrdinalIgnoreCase))
+				brush = Brushes.LimeGreen;
 
 			LogLines.Add(new LogLine
 			{
 				Message = message,
-				Color = color
+				Color = brush
 			});
 		}
 	}

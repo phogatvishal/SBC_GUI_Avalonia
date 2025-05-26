@@ -30,9 +30,13 @@ namespace SBC.WPF.Services
 			services.AddTransient<MainWindow>();
 			services.AddSingleton<MainWindowViewModel>();
 			services.AddSingleton<ITestLoaderService, TestLoaderService>();
-			services.AddSingleton<ISBCInteropService>(provider => new SBCInteropCallerService(new CInterfaceClass()));
+			services.AddSingleton<ISBCInteropService>(provider =>
+			{
+				var logger = provider.GetRequiredService<ILoggerService>();
+				return new SBCInteropCallerService(new CInterface(), logger);
+			});
 			services.AddSingleton<IExceptionHandlerService, ExceptionHandlerService>();
-			services.AddSingleton<ILoggerService>(provider => new LoggerService("logs.log"));
+			services.AddSingleton<ILoggerService>(provider => new LoggerService("logs.log", "apilogs.log"));
 		}
 
 		public void Run(IClassicDesktopStyleApplicationLifetime desktop)
