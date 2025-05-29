@@ -1,0 +1,161 @@
+<Window
+    x:Class="SBC.WPF.ConnectionSettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:SBC.WPF.Models"
+    xmlns:vm="using:SBC.WPF.ViewModels"
+    Title="Connection Settings "
+    Width="650"
+    Height="400"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:ConnectionSettingsViewModel"
+    ExtendClientAreaChromeHints="NoChrome"
+    ExtendClientAreaTitleBarHeightHint="-1"
+    ExtendClientAreaToDecorationsHint="True"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Design.DataContext>
+        <vm:ConnectionSettingsViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="35, *, Auto">
+
+        <!--  Header  -->
+        <DockPanel Grid.Row="0" Background="{StaticResource HeaderBrush}">
+            <Image
+                Margin="0,3"
+                HorizontalAlignment="Left"
+                Source="{StaticResource icons_LFT_logoDrawingImage}" />
+            <TextBlock
+                Margin="10,0"
+                VerticalAlignment="Center"
+                FontSize="16"
+                Foreground="White"
+                Text="Connection Settings" />
+            <Button
+                Width="14"
+                Height="14"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                Click="CloseButton_Click">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Grid x:Name="RootGrid" Background="Transparent">
+                            <Image
+                                Width="14"
+                                Height="14"
+                                Source="{StaticResource icons_Close_VectorDrawingImage}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Styles>
+                    <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                        <Setter Property="Background" Value="Red" />
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </DockPanel>
+
+        <StackPanel
+            Grid.Row="1"
+            Margin="60,20,60,0"
+            VerticalAlignment="Top">
+
+            <!--  Serial Settings  -->
+            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                <TextBlock FontWeight="Medium" Text="Serial" />
+                <Ellipse
+                    Width="12"
+                    Height="12"
+                    Margin="10,0,0,0" />
+            </StackPanel>
+
+            <StackPanel Margin="0,0,0,20" Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    Height="10"
+                    VerticalAlignment="Center"
+                    Text="COM Port" />
+
+                <ComboBox
+                    Width="250"
+                    Height="10"
+                    ItemsSource="{Binding AvailableComPorts}"
+                    SelectedItem="{Binding SelectedComPort}" />
+            </StackPanel>
+
+            <StackPanel Margin="0,0,0,20" Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    Height="10"
+                    VerticalAlignment="Center"
+                    Text="Baud Port" />
+
+                <ComboBox
+                    Width="250"
+                    Height="5"
+                    ItemsSource="{Binding AvailableBaudRates}"
+                    SelectedItem="{Binding SelectedBaudRate}" />
+            </StackPanel>
+
+            <!--  Ethernet Settings  -->
+            <StackPanel
+                Grid.Row="2"
+                Margin="0,20,0,10"
+                Orientation="Horizontal">
+                <TextBlock FontWeight="Medium" Text="Ethernet" />
+                <Ellipse
+                    Width="12"
+                    Height="12"
+                    Margin="10,2,0,0"
+                    Fill="{Binding EthernetStatusColor}" />
+            </StackPanel>
+
+            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    VerticalAlignment="Center"
+                    Text="Destination IP" />
+
+                <StackPanel Orientation="Horizontal">
+                    <!--  IP Part 1  -->
+                    <TextBox
+                        Width="53"
+                        Margin="0,0,5,0"
+                        VerticalContentAlignment="Center"
+                        Text="{Binding IPPart1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Watermark="1.0" />
+
+                    <!--  IP Part 2  -->
+                    <TextBox
+                        Width="53"
+                        Margin="0,0,5,0"
+                        VerticalContentAlignment="Center"
+                        Text="{Binding IPPart2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Watermark="1.0" />
+
+                    <!--  IP Part 3  -->
+                    <TextBox
+                        Width="53"
+                        Margin="0,0,5,0"
+                        VerticalContentAlignment="Center"
+                        Text="{Binding IPPart3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Watermark="1.0" />
+
+                    <!--  IP Part 4  -->
+                    <TextBox
+                        Width="53"
+                        Margin="0,0,5,0"
+                        VerticalContentAlignment="Center"
+                        Text="{Binding IPPart4, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Watermark="1.0" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</Window>

@@ -151,5 +151,9 @@ namespace SBC.WPF.Views
 				e.Handled = true;
 			}
 		}
+
+		private void HamburgerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		{
+		}
 	}
 }

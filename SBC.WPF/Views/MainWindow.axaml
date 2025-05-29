@@ -85,7 +85,7 @@
                     Click="MinimizeButton_Click">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Grid Background="Transparent">
+                            <Grid x:Name="RootGrid" Background="Transparent">
                                 <Image
                                     Width="14"
                                     Height="14"
@@ -93,6 +93,11 @@
                             </Grid>
                         </ControlTemplate>
                     </Button.Template>
+                    <Button.Styles>
+                        <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                            <Setter Property="Background" Value="{StaticResource ThemeBrush}" />
+                        </Style>
+                    </Button.Styles>
                 </Button>
 
 
@@ -108,7 +113,7 @@
                     Click="MaximizeButton_Click">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Grid Background="Transparent">
+                            <Grid x:Name="RootGrid" Background="Transparent">
                                 <Image
                                     x:Name="RestoreIcon"
                                     Width="14"
@@ -117,9 +122,14 @@
                             </Grid>
                         </ControlTemplate>
                     </Button.Template>
+                    <Button.Styles>
+                        <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                            <Setter Property="Background" Value="{StaticResource ThemeBrush}" />
+                        </Style>
+                    </Button.Styles>
                 </Button>
 
-                <!--  Close Bt  -->
+                <!--  Close Btn  -->
                 <Button
                     Grid.Column="4"
                     Width="14"
@@ -130,7 +140,7 @@
                     Click="CloseButton_Click">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
-                            <Grid Background="Transparent">
+                            <Grid x:Name="RootGrid" Background="Transparent">
                                 <!--  Close Icon: Cross  -->
                                 <Image
                                     Width="14"
@@ -139,6 +149,11 @@
                             </Grid>
                         </ControlTemplate>
                     </Button.Template>
+                    <Button.Styles>
+                        <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                            <Setter Property="Background" Value="Red" />
+                        </Style>
+                    </Button.Styles>
                 </Button>
             </Grid>
         </Border>
@@ -316,6 +331,72 @@
                 </StackPanel>
             </Grid>
         </Grid>
+
+        <DockPanel
+            Grid.Row="2"
+            Grid.ColumnSpan="3"
+            LastChildFill="True">
+            <!--  Main content here  -->
+            <Grid
+                Height="40"
+                Background="{StaticResource HeaderBrush}"
+                ColumnDefinitions="*,Auto,Auto,Auto"
+                DockPanel.Dock="Bottom">
+
+                <!--  Serial Number Label  -->
+                <TextBlock
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="Serial Number: N/A" />
+
+                <!--  Hamburger Menu Button  -->
+                <Button
+                    Grid.Column="3"
+                    Width="35"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Padding="5"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Cursor="Hand">
+                    <Button.Content>
+ 
+                        <Image x:Name="HamburgerIcon">
+                            <Image.Styles>
+                                <Style Selector="Image">
+                                    <Setter Property="Source" Value="{StaticResource icons_Sub_MenuDrawingImage}" />
+
+                                    <!--<Style.Setters>
+											<Setter Property=""
+										</Style.Setters>-->
+
+                                </Style>
+                            </Image.Styles>
+                        </Image>
+                    </Button.Content>
+
+                    <Button.Flyout>
+                        <Flyout Placement="TopEdgeAlignedRight">
+                            <Flyout.Content>
+                                <StackPanel>
+                                    <MenuItem Header="About" IsEnabled="False" />
+                                    <MenuItem Command="{Binding APIHelpCommand}" Header="API Help" />
+                                    <MenuItem Header="User Manual" IsEnabled="False" />
+                                    <MenuItem Header="API Logs" />
+                                    <MenuItem Header="Generate Report" IsEnabled="False" />
+                                    <MenuItem Command="{Binding OpenConnectionSettingsCommand}" Header="Connection Settings" />
+                                    <MenuItem Command="{Binding ExitCommand}" Header="Exit" />
+                                </StackPanel>
+                            </Flyout.Content>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
+        </DockPanel>
     </Grid>
 
 </Window>

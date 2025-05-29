@@ -9,6 +9,6 @@ namespace SBC.WPF.Interfaces
 	public interface IExceptionHandlerService
 	{
 		void RegisterGlobalHandlers();
-		void HandleException(string title, Exception ex);
+		void HandleException(string title, Exception ex = null);
 	}
 }

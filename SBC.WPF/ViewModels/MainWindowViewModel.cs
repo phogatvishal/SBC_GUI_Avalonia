@@ -11,6 +11,12 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Media;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using Avalonia.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SBC.WPF.ViewModels
 {
@@ -19,6 +25,7 @@ namespace SBC.WPF.ViewModels
 		private readonly ITestLoaderService _testLoaderService;
 		private readonly ISBCInteropService _interopService;
 		private readonly IServiceProvider _serviceProvider;
+		private readonly IExceptionHandlerService _exceptionHandler;
 		public ILoggerService _logger;
 
 		[ObservableProperty]
@@ -50,11 +57,13 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private bool _isAllSelected;
 
-		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider, ILoggerService logger)
+		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider,
+			ILoggerService logger, IExceptionHandlerService exceptionHandler)
         {
 			_testLoaderService = testLoaderService;
 			_interopService = interopService;
 			_serviceProvider = serviceProvider;
+			_exceptionHandler = exceptionHandler;
 
 			_logger = logger;
 			
@@ -109,29 +118,29 @@ namespace SBC.WPF.ViewModels
 			}
 
 			var bitMask = GetTestBitmask(SelectedTestGroup.Name);
-			Log($"Bit Mask: {bitMask}");
+			Log($"Bit Mask: {bitMask}{Environment.NewLine}");
 
 			for (int i = 1; i <= SelectedIteration; i++)
 			{
-				Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...");
+				Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...{Environment.NewLine}");
 				await Task.Delay(10); // Let UI update
 
 				foreach (var test in selectedTests)
 				{
-					Log($"  - Executing: {test.Name}");
+					Log($"  - Executing: {test.Name}{Environment.NewLine}");
 					await Task.Delay(1); // Simulate small delay
 				}
+
+				Log("Test execution finished.");
+
+				var result = _interopService.RunTest(
+					GetConnectionFromType(SelectedTestGroup.Type),
+					GetGroupFromTestType(SelectedTestGroup.Type),
+					bitMask);
+
+				Log(result.ToString());
+				UpdateTestResults(result.ToString(), SelectedTestGroup.Testcases);
 			}
-
-			Log("Test execution finished.");
-
-			var result = _interopService.RunTest(
-				GetConnectionFromType(SelectedTestGroup.Type),
-				GetGroupFromTestType(SelectedTestGroup.Type),
-				bitMask);
-
-			Log(result.ToString());
-			UpdateTestResults(result.ToString(),  SelectedTestGroup.Testcases);
 		}
 
 		private void UpdateTestResults(string resultData, IEnumerable<TestCase> testCases)
@@ -267,16 +276,123 @@ namespace SBC.WPF.ViewModels
 
 			IBrush brush = Brushes.White;
 
-			if (message.Contains("FAIL", StringComparison.OrdinalIgnoreCase))
-				brush = Brushes.Red;
-			else if (message.Contains("PASS", StringComparison.OrdinalIgnoreCase))
-				brush = Brushes.LimeGreen;
 
 			LogLines.Add(new LogLine
 			{
 				Message = message,
 				Color = brush
 			});
+		}
+
+		[RelayCommand]
+		private void APIHelp()
+		{
+			string helpFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Docs", "SBC.chm");
+
+			if (!File.Exists(helpFilePath))
+			{
+				 _exceptionHandler.HandleException("Help File Error");
+				return;
+			}
+
+			try
+			{
+				// .chm files are only supported on Windows
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				{
+					Process.Start(new ProcessStartInfo
+					{
+						FileName = helpFilePath,
+						UseShellExecute = true,
+					});
+				}
+				else
+				{
+					_exceptionHandler.HandleException(".chm help files are not supported on this platform.");
+				}
+			}
+			catch (Exception ex)
+			{
+				//await ShowMessageAsync($"Failed to open help file:\n{ex.Message}");
+				//_exceptionHandler.HandleExceptionAsync(e($"Failed to open help file:\n{ex.Message}");
+			}
+		}
+
+		[RelayCommand]
+		private async void OpenConnectionSettings()
+		{
+			try
+			{
+				if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+					return;
+
+				var mainWindow = desktop.MainWindow;
+
+				// Apply blur effect to the main window
+				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
+
+				var connectionSettingsView = _serviceProvider.GetRequiredService<ConnectionSettingsView>();
+
+				//if (connectionSettingsView.DataContext is ConnectionSettingsViewModel vm)
+				//{
+				//	vm.RefreshComPorts();
+				//}
+
+				// Set owner for modal dialog behavior
+				await connectionSettingsView.ShowDialog(mainWindow);
+
+				// Remove blur after dialog closes
+				mainWindow.Effect = null;
+			}
+			catch (Exception ex)
+			{
+
+				throw;
+			}
+		}
+
+		private static async Task ShowMessageAsync(string message)
+		{
+			await Dispatcher.UIThread.InvokeAsync(() =>
+			{
+				var messageBox = new Window
+				{
+					Title = "Error",
+					Width = 400,
+					Height = 150,
+					Content = new StackPanel
+					{
+						Margin = new Thickness(20),
+						Children =
+				{
+					new TextBlock
+					{
+						Text = message,
+						TextWrapping = TextWrapping.Wrap
+					},
+					new Button
+					{
+						Content = "OK",
+						HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+						Width = 80,
+						Margin = new Thickness(0,10,0,0),
+						[!Button.CommandProperty] = new Avalonia.Data.Binding("Close")
+					}
+				}
+					}
+				};
+
+				messageBox.Show();
+			});
+		}
+
+		[RelayCommand]
+		private void Exit()
+		{
+			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+			{
+				lifetime.Shutdown();
+			}
 		}
 	}
 }

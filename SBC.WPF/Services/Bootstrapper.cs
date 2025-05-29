@@ -29,6 +29,8 @@ namespace SBC.WPF.Services
 		{
 			services.AddTransient<MainWindow>();
 			services.AddSingleton<MainWindowViewModel>();
+			services.AddTransient<ConnectionSettingsView>();
+			services.AddTransient<ConnectionSettingsViewModel>();
 			services.AddSingleton<ITestLoaderService, TestLoaderService>();
 			services.AddSingleton<ISBCInteropService>(provider =>
 			{
