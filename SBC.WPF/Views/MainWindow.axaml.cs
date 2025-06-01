@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -7,9 +7,9 @@ using SBC.WPF.ViewModels;
 using System.Linq;
 using Avalonia.Styling;
 using SBC.WPF.Interfaces;
-using Avalonia.Threading;
 using SBC.WPF.Models;
-using Avalonia.Controls.Shapes;
+using Avalonia.Input;
+using Avalonia.Threading;
 
 namespace SBC.WPF.Views
 {
@@ -20,6 +20,8 @@ namespace SBC.WPF.Views
 		private PixelRect _previousBounds; // Use PixelRect instead of WPF's Rect
 		private readonly ILoggerService _logger;
 		private readonly MainWindowViewModel _mainWindowViewModel;
+		private const int ResizeBorderThickness = 6;
+		private WindowEdge? _resizeEdge;
 
 		public MainWindow(MainWindowViewModel mainWindowViewModel, ILoggerService logger)
 		{
@@ -50,6 +52,9 @@ namespace SBC.WPF.Views
 			{
 				LogScrollViewer?.ScrollToEnd();
 			};
+
+			// Disable native OS borders and title bar
+			SystemDecorations = SystemDecorations.None;
 		}
 
 		private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
@@ -118,21 +123,77 @@ namespace SBC.WPF.Views
 
 		private void TitleBar_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
 		{
-            if (e.ClickCount == 2)
-            {
-				ToggleWindowState();
-            }
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+			var point = e.GetPosition(this);
+			var edge = GetWindowEdge(point);
+
+			if (e.ClickCount == 2)
 			{
-				BeginMoveDrag(e);
+				ToggleWindowState();
+				return;
 			}
+
+			if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+			{
+				if (edge.HasValue)
+				{
+					BeginResizeDrag(edge.Value, e);
+				}
+				else
+				{
+					BeginMoveDrag(e);
+				}
+			}
+		}
+
+		private void TitleBar_PointerMoved(object? sender, PointerEventArgs e)
+		{
+			var point = e.GetPosition(this);
+			var edge = GetWindowEdge(point);
+			_resizeEdge = edge;
+
+			Cursor = edge switch
+			{
+				WindowEdge.North => new Cursor(StandardCursorType.TopSide),
+				WindowEdge.South => new Cursor(StandardCursorType.BottomSide),
+				WindowEdge.West => new Cursor(StandardCursorType.LeftSide),
+				WindowEdge.East => new Cursor(StandardCursorType.RightSide),
+				WindowEdge.NorthWest => new Cursor(StandardCursorType.TopLeftCorner),
+				WindowEdge.NorthEast => new Cursor(StandardCursorType.TopRightCorner),
+				WindowEdge.SouthWest => new Cursor(StandardCursorType.BottomLeftCorner),
+				WindowEdge.SouthEast => new Cursor(StandardCursorType.BottomRightCorner),
+				_ => new Cursor(StandardCursorType.Arrow)
+			};
 		}
 
 		private void ToggleWindowState()
 		{
-			WindowState = (WindowState == WindowState.Maximized)
-				? WindowState.Normal
-				: WindowState.Maximized;
+			if (WindowState == WindowState.Maximized)
+			{
+				WindowState = WindowState.Normal;
+
+				ExtendClientAreaToDecorationsHint = false;
+
+				//  Restore safe working size explicitly
+				Width = 1024;  // use your default width
+				Height = 768;  // use your default height
+
+				InvalidateMeasure();
+				InvalidateVisual();
+
+				// Force re-layout and refresh
+				Dispatcher.UIThread.Post(() =>
+				{
+					ExtendClientAreaToDecorationsHint = true;
+
+					// This helps re-align window on Linux/X11
+					Position = new PixelPoint(Position.X + 1, Position.Y + 1);
+					Position = new PixelPoint(Position.X - 1, Position.Y - 1);
+				}, DispatcherPriority.Background);
+			}
+			else
+			{
+				WindowState = WindowState.Maximized;
+			}
 		}
 
 		private async void ExportLogs_Click(object? sender, RoutedEventArgs e)
@@ -148,6 +209,68 @@ namespace SBC.WPF.Views
 				group.IsAllSelected = group.IsAllSelected == null ? false : true;
 
 				// prevent Avalonia from toggling to null on click
+				e.Handled = true;
+			}
+		}
+
+		private void Window_PointerMoved(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+		{
+			if (_resizeEdge.HasValue)
+			{
+				BeginResizeDrag(_resizeEdge.Value, e);
+			}
+		}
+
+		private void Window_PointerMoved(object? sender, PointerEventArgs e)
+		{
+			var point = e.GetPosition(this);
+			var edge = GetWindowEdge(point);
+			_resizeEdge = edge;
+
+			Cursor = edge switch
+			{
+				WindowEdge.North => new Cursor(StandardCursorType.TopSide),
+				WindowEdge.South => new Cursor(StandardCursorType.BottomSide),
+				WindowEdge.West => new Cursor(StandardCursorType.LeftSide),
+				WindowEdge.East => new Cursor(StandardCursorType.RightSide),
+				WindowEdge.NorthWest => new Cursor(StandardCursorType.TopLeftCorner),
+				WindowEdge.NorthEast => new Cursor(StandardCursorType.TopRightCorner),
+				WindowEdge.SouthWest => new Cursor(StandardCursorType.BottomLeftCorner),
+				WindowEdge.SouthEast => new Cursor(StandardCursorType.BottomRightCorner),
+				_ => new Cursor(StandardCursorType.Arrow)
+			};
+		}
+
+		private WindowEdge? GetWindowEdge(Point point)
+		{
+			const int thickness = 6;
+			var width = Bounds.Width;
+			var height = Bounds.Height;
+
+			bool left = point.X <= thickness;
+			bool right = point.X >= width - thickness;
+			bool top = point.Y <= thickness;
+			bool bottom = point.Y >= height - thickness;
+
+			return (top, bottom, left, right) switch
+			{
+				(true, false, true, false) => WindowEdge.NorthWest,
+				(true, false, false, true) => WindowEdge.NorthEast,
+				(false, true, true, false) => WindowEdge.SouthWest,
+				(false, true, false, true) => WindowEdge.SouthEast,
+				(true, false, false, false) => WindowEdge.North,
+				(false, true, false, false) => WindowEdge.South,
+				(false, false, true, false) => WindowEdge.West,
+				(false, false, false, true) => WindowEdge.East,
+				_ => null
+			};
+		}
+
+		private void Window_PointerPressed(object? sender, PointerPressedEventArgs e)
+		{
+			if (_resizeEdge.HasValue && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+			{
+				BeginResizeDrag(_resizeEdge.Value, e);
 				e.Handled = true;
 			}
 		}

@@ -1,11 +1,7 @@
 ﻿using Avalonia.Data.Converters;
 using Avalonia;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SBC.WPF.Converters
 {
@@ -17,5 +13,4 @@ namespace SBC.WPF.Converters
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 			=> value is bool b ? !b : AvaloniaProperty.UnsetValue;
 	}
-
 }

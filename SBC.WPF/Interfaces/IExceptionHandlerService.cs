@@ -10,5 +10,6 @@ namespace SBC.WPF.Interfaces
 	{
 		void RegisterGlobalHandlers();
 		void HandleException(string title, Exception ex = null);
+		Task ShowMessageAsync(string? title, string message);
 	}
 }

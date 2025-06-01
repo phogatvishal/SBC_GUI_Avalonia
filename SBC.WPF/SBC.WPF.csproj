@@ -45,13 +45,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Interop.SBC">
-      <HintPath>..\lib\Interop.SBC.dll</HintPath>
-      <Private>False</Private>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-  </ItemGroup>
 </Project>

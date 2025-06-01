@@ -15,8 +15,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using SBC.WPF.Enums;
 
 namespace SBC.WPF.ViewModels
 {
@@ -27,6 +27,7 @@ namespace SBC.WPF.ViewModels
 		private readonly IServiceProvider _serviceProvider;
 		private readonly IExceptionHandlerService _exceptionHandler;
 		public ILoggerService _logger;
+		private APILogView apiLogView;
 
 		[ObservableProperty]
 		private bool _isNavCollapsed;
@@ -214,6 +215,7 @@ namespace SBC.WPF.ViewModels
 		private void ClearLogs()
 		{
 			LogLines.Clear();
+			_logger.ClearCurrentLogs();
 		}
 
 		private InterfaceConnection GetConnectionFromType(string type)
@@ -313,8 +315,7 @@ namespace SBC.WPF.ViewModels
 			}
 			catch (Exception ex)
 			{
-				//await ShowMessageAsync($"Failed to open help file:\n{ex.Message}");
-				//_exceptionHandler.HandleExceptionAsync(e($"Failed to open help file:\n{ex.Message}");
+				_exceptionHandler.ShowMessageAsync(null, $"Failed to open help file");
 			}
 		}
 
@@ -328,62 +329,22 @@ namespace SBC.WPF.ViewModels
 
 				var mainWindow = desktop.MainWindow;
 
-				// Apply blur effect to the main window
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
 				var connectionSettingsView = _serviceProvider.GetRequiredService<ConnectionSettingsView>();
 
-				//if (connectionSettingsView.DataContext is ConnectionSettingsViewModel vm)
-				//{
-				//	vm.RefreshComPorts();
-				//}
-
-				// Set owner for modal dialog behavior
+				if (connectionSettingsView.DataContext is ConnectionSettingsViewModel vm)
+				{
+					vm.RefreshCOMPorts();
+				}
 				await connectionSettingsView.ShowDialog(mainWindow);
 
-				// Remove blur after dialog closes
 				mainWindow.Effect = null;
 			}
 			catch (Exception ex)
 			{
-
-				throw;
+				await _exceptionHandler.ShowMessageAsync(null, $"Failed to open connection settings page");
 			}
-		}
-
-		private static async Task ShowMessageAsync(string message)
-		{
-			await Dispatcher.UIThread.InvokeAsync(() =>
-			{
-				var messageBox = new Window
-				{
-					Title = "Error",
-					Width = 400,
-					Height = 150,
-					Content = new StackPanel
-					{
-						Margin = new Thickness(20),
-						Children =
-				{
-					new TextBlock
-					{
-						Text = message,
-						TextWrapping = TextWrapping.Wrap
-					},
-					new Button
-					{
-						Content = "OK",
-						HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
-						Width = 80,
-						Margin = new Thickness(0,10,0,0),
-						[!Button.CommandProperty] = new Avalonia.Data.Binding("Close")
-					}
-				}
-					}
-				};
-
-				messageBox.Show();
-			});
 		}
 
 		[RelayCommand]
@@ -392,6 +353,29 @@ namespace SBC.WPF.ViewModels
 			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
 			{
 				lifetime.Shutdown();
+			}
+		}
+
+		[RelayCommand]
+		private async Task ExportApiLogsAsync()
+		{
+			try
+			{
+				if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+					return;
+
+				var mainWindow = desktop.MainWindow;
+
+				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
+
+				var connectionSettingsView = _serviceProvider.GetRequiredService<APILogView>();
+				await connectionSettingsView.ShowDialog(mainWindow);
+
+				mainWindow.Effect = null;
+			}
+			catch (Exception ex)
+			{
+				await _exceptionHandler.ShowMessageAsync(null, $"Failed to open ExportApi-Logs page");
 			}
 		}
 	}

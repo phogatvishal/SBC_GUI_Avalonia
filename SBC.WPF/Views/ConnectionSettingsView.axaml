@@ -8,10 +8,11 @@
     xmlns:vm="using:SBC.WPF.ViewModels"
     Title="Connection Settings "
     Width="650"
-    Height="400"
+    Height="500"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:ConnectionSettingsViewModel"
+    CanResize="False"
     ExtendClientAreaChromeHints="NoChrome"
     ExtendClientAreaTitleBarHeightHint="-1"
     ExtendClientAreaToDecorationsHint="True"
@@ -35,13 +36,13 @@
                 Foreground="White"
                 Text="Connection Settings" />
             <Button
-                Width="14"
-                Height="14"
-                Margin="0,0,10,0"
+                Width="35"
+                Height="35"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Background="Transparent"
-                Click="CloseButton_Click">
+                Click="CloseButton_Click"
+                FontWeight="Bold">
                 <Button.Template>
                     <ControlTemplate>
                         <Grid x:Name="RootGrid" Background="Transparent">
@@ -71,7 +72,8 @@
                 <Ellipse
                     Width="12"
                     Height="12"
-                    Margin="10,0,0,0" />
+                    Margin="10,0,0,0"
+                    Fill="{Binding SerialStatusColor}" />
             </StackPanel>
 
             <StackPanel Margin="0,0,0,20" Orientation="Horizontal">
@@ -115,46 +117,88 @@
                     Fill="{Binding EthernetStatusColor}" />
             </StackPanel>
 
+            <StackPanel>
+                <StackPanel
+                    Margin="0,0,0,10"
+                    Orientation="Horizontal"
+                    Spacing="5">
+                    <TextBlock
+                        Width="120"
+                        VerticalAlignment="Center"
+                        Text="Destination IP" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <!--  IP Part 1  -->
+                        <TextBox
+                            Width="53"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Text="{Binding IPPart1, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
+
+                        <!--  IP Part 2  -->
+                        <TextBox
+                            Width="53"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Text="{Binding IPPart2, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
+
+                        <!--  IP Part 3  -->
+                        <TextBox
+                            Width="53"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Text="{Binding IPPart3, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
+
+                        <!--  IP Part 4  -->
+                        <TextBox
+                            Width="53"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Text="{Binding IPPart4, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
+                    </StackPanel>
+                </StackPanel>
+
+            </StackPanel>
+
             <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
                 <TextBlock
                     Width="120"
                     VerticalAlignment="Center"
-                    Text="Destination IP" />
-
-                <StackPanel Orientation="Horizontal">
-                    <!--  IP Part 1  -->
-                    <TextBox
-                        Width="53"
-                        Margin="0,0,5,0"
-                        VerticalContentAlignment="Center"
-                        Text="{Binding IPPart1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Watermark="1.0" />
-
-                    <!--  IP Part 2  -->
-                    <TextBox
-                        Width="53"
-                        Margin="0,0,5,0"
-                        VerticalContentAlignment="Center"
-                        Text="{Binding IPPart2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Watermark="1.0" />
-
-                    <!--  IP Part 3  -->
-                    <TextBox
-                        Width="53"
-                        Margin="0,0,5,0"
-                        VerticalContentAlignment="Center"
-                        Text="{Binding IPPart3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Watermark="1.0" />
-
-                    <!--  IP Part 4  -->
-                    <TextBox
-                        Width="53"
-                        Margin="0,0,5,0"
-                        VerticalContentAlignment="Center"
-                        Text="{Binding IPPart4, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        Watermark="1.0" />
-                </StackPanel>
+                    Text="Port" />
+                <TextBox
+                    Width="250"
+                    MaxLength="5"
+                    Text="{Binding PortInput, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
+
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Width="120"
+                    VerticalAlignment="Center"
+                    Text="Protocol" />
+                <ComboBox
+                    Width="250"
+                    ItemsSource="{Binding Protocols}"
+                    SelectedItem="{Binding SelectedProtocol}" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,0,0,50"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Orientation="Horizontal">
+            <Button Command="{Binding TestConnectionCommand}" Content="Test" />
+            <Button
+                Margin="10,0,0,0"
+                Command="{Binding ApplySettingsCommand}"
+                Content="Apply" />
         </StackPanel>
 
     </Grid>

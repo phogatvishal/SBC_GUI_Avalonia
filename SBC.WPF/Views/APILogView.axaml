@@ -1,0 +1,103 @@
+<Window
+    x:Class="SBC.WPF.APILogView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:SBC.WPF.Models"
+    xmlns:vm="using:SBC.WPF.ViewModels"
+    Title="APILogView"
+    Width="800"
+    Height="450"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="vm:APILogViewModel"
+    CanResize="False"
+    ExtendClientAreaChromeHints="NoChrome"
+    ExtendClientAreaTitleBarHeightHint="-1"
+    ExtendClientAreaToDecorationsHint="True"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+
+    <Grid RowDefinitions="35, *, Auto">
+
+        <DockPanel
+            Grid.Row="0"
+            Background="{StaticResource HeaderBrush}"
+            PointerPressed="OnHeaderPointerPressed">
+            <Image
+                Margin="0,3"
+                HorizontalAlignment="Left"
+                Source="{StaticResource icons_LFT_logoDrawingImage}" />
+
+            <TextBlock
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                FontSize="16"
+                FontWeight="Normal"
+                Foreground="White"
+                Text="API Logs" />
+
+            <Button
+                Width="35"
+                Height="35"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="CloseButton_Click"
+                DockPanel.Dock="Right"
+                FontWeight="Bold"
+                Foreground="White">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" Background="Transparent">
+                            <!--  Close Icon: Cross  -->
+                            <Image
+                                Width="14"
+                                Height="14"
+                                Source="{StaticResource icons_Close_VectorDrawingImage}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Styles>
+                    <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                        <Setter Property="Background" Value="Red" />
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </DockPanel>
+
+        <Border
+            Grid.Row="1"
+            Margin="5"
+            Padding="5"
+            BorderBrush="Gray"
+            BorderThickness="1">
+            <TextBox
+                AcceptsReturn="True"
+                Background="Transparent"
+                BorderThickness="0"
+                Focusable="False"
+                FontFamily="Consolas"
+                FontSize="12"
+                IsReadOnly="True"
+                ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                Text="{Binding CombinedLogs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap" />
+        </Border>
+
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,5,5,10"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
+            <Button Click="ExportLogsButton_Click" Content="Export" />
+            <Button
+                Margin="10,0,0,0"
+                Command="{Binding ClearLogsCommand}"
+                Content="Clear" />
+        </StackPanel>
+    </Grid>
+</Window>
