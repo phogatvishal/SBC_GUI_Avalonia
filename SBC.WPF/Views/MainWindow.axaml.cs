@@ -9,7 +9,6 @@ using Avalonia.Styling;
 using SBC.WPF.Interfaces;
 using SBC.WPF.Models;
 using Avalonia.Input;
-using Avalonia.Threading;
 
 namespace SBC.WPF.Views
 {
@@ -53,39 +52,23 @@ namespace SBC.WPF.Views
 				LogScrollViewer?.ScrollToEnd();
 			};
 
+			var screen = Screens.ScreenFromWindow(this) ?? Screens.Primary;
+			Width = screen.WorkingArea.Width * 0.8;
+			Height = screen.WorkingArea.Height * 0.8;
+
+			Position = new PixelPoint(
+			screen.WorkingArea.X + (int)((screen.WorkingArea.Width - Width) / 2),
+			screen.WorkingArea.Y + (int)((screen.WorkingArea.Height - Height) / 2));
+
+			_lastWindowState = this.WindowState;
+
 			// Disable native OS borders and title bar
 			SystemDecorations = SystemDecorations.None;
 		}
 
 		private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
 		{
-			if (_isCustomMaximized)
-			{
-				// Restore previous size
-				this.Position = _previousBounds.Position;
-				this.Width = _previousBounds.Width;
-				this.Height = _previousBounds.Height;
-				UpdateMaximizeIcon("icons_MaximiseDrawingImage");
-
-				_isCustomMaximized = false;
-			}
-			else
-			{
-				// Save bounds
-				_previousBounds = new PixelRect(Position, new PixelSize((int)Width, (int)Height));
-
-				// Maximize manually to working area (cross-platform safe)
-				var screen = Screens.ScreenFromWindow(this);
-				if (screen is not null)
-				{
-					this.Position = screen.WorkingArea.Position;
-					this.Width = screen.WorkingArea.Width;
-					this.Height = screen.WorkingArea.Height;
-				}
-				UpdateMaximizeIcon("icons_Restore_DownDrawingImage");
-
-				_isCustomMaximized = true;
-			}
+			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 		}
 
 		private void UpdateMaximizeIcon(string resourceKey)
@@ -121,14 +104,14 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private void TitleBar_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+		private void TitleBar_PointerPressed(object? sender, PointerPressedEventArgs e)
 		{
 			var point = e.GetPosition(this);
 			var edge = GetWindowEdge(point);
 
 			if (e.ClickCount == 2)
 			{
-				ToggleWindowState();
+				WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 				return;
 			}
 
@@ -163,37 +146,6 @@ namespace SBC.WPF.Views
 				WindowEdge.SouthEast => new Cursor(StandardCursorType.BottomRightCorner),
 				_ => new Cursor(StandardCursorType.Arrow)
 			};
-		}
-
-		private void ToggleWindowState()
-		{
-			if (WindowState == WindowState.Maximized)
-			{
-				WindowState = WindowState.Normal;
-
-				ExtendClientAreaToDecorationsHint = false;
-
-				//  Restore safe working size explicitly
-				Width = 1024;  // use your default width
-				Height = 768;  // use your default height
-
-				InvalidateMeasure();
-				InvalidateVisual();
-
-				// Force re-layout and refresh
-				Dispatcher.UIThread.Post(() =>
-				{
-					ExtendClientAreaToDecorationsHint = true;
-
-					// This helps re-align window on Linux/X11
-					Position = new PixelPoint(Position.X + 1, Position.Y + 1);
-					Position = new PixelPoint(Position.X - 1, Position.Y - 1);
-				}, DispatcherPriority.Background);
-			}
-			else
-			{
-				WindowState = WindowState.Maximized;
-			}
 		}
 
 		private async void ExportLogs_Click(object? sender, RoutedEventArgs e)

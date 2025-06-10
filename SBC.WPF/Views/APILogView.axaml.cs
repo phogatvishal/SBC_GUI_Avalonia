@@ -14,6 +14,9 @@ public partial class APILogView : Window
         InitializeComponent();
         DataContext = apiLogViewModel;
 		_apiLogViewModel = apiLogViewModel;
+
+		// Disable native OS borders and title bar
+		SystemDecorations = SystemDecorations.None;
 	}
 
 	private async void ExportLogsButton_Click(object? sender, RoutedEventArgs e)

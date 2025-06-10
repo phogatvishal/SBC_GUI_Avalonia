@@ -15,6 +15,19 @@
   <ItemGroup>
     <None Remove="Resources\Data\Tests.json" />
     <None Remove="Resources\Docs\SBC.chm" />
+    <None Remove="Resources\Icons\appicon.ico" />
+    <None Remove="Resources\Icons\Close Vector.svg" />
+    <None Remove="Resources\Icons\EtherNet Vector - Connected.svg" />
+    <None Remove="Resources\Icons\EtherNet Vector.svg" />
+    <None Remove="Resources\Icons\LFT logo.svg" />
+    <None Remove="Resources\Icons\Maximise.svg" />
+    <None Remove="Resources\Icons\Minimize.svg" />
+    <None Remove="Resources\Icons\Restore Down.svg" />
+    <None Remove="Resources\Icons\SBCSplashScreen.svg" />
+    <None Remove="Resources\Icons\Sub Menu - Selected.svg" />
+    <None Remove="Resources\Icons\Sub Menu.svg" />
+    <None Remove="Resources\Icons\VGA Vector - Connected.svg" />
+    <None Remove="Resources\Icons\VGA Vector.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +47,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="RJCP.SerialPortStream" Version="3.0.3" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.5" />
     <PackageReference Include="System.Text.Json" Version="9.0.4" />
   </ItemGroup>
 
@@ -42,6 +57,46 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Docs\SBC.chm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <AvaloniaResource Include="Resources\Icons\appicon.ico" />
+    <AvaloniaResource Include="Resources\Icons\SBCSplashScreen.svg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <Content Include="Resources\Icons\Close Vector.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\EtherNet Vector - Connected.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\EtherNet Vector.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\LFT logo.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\Maximise.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\Minimize.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\Restore Down.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\Sub Menu - Selected.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\Sub Menu.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icons\VGA Vector - Connected.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Icons\VGA Vector.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

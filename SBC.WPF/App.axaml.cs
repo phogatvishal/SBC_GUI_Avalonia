@@ -1,9 +1,11 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Themes.Fluent;
 using Microsoft.Extensions.DependencyInjection;
 using SBC.WPF.Interfaces;
 using SBC.WPF.Services;
+using System;
 
 namespace SBC.WPF
 {

@@ -11,6 +11,7 @@ using SBC.WPF.Interfaces;
 using SBC.WPF.Services;
 using System.Net;
 using SBC.WPF.Enums;
+using RJCP.IO.Ports;
 
 namespace SBC.WPF.ViewModels
 {
@@ -19,6 +20,7 @@ namespace SBC.WPF.ViewModels
 		private readonly MainWindowViewModel _mainWindowViewModel;
 		private readonly ISBCInteropService _interopService;
 		private readonly IExceptionHandlerService _exceptionHandler;
+		private SerialPortStream serialPortStream;
 
 		public ConnectionSettingsViewModel(MainWindowViewModel mainWindowViewModel, ISBCInteropService interopService, IExceptionHandlerService exceptionHandler)
         {
@@ -26,7 +28,10 @@ namespace SBC.WPF.ViewModels
 			_interopService = interopService;
 			_exceptionHandler = exceptionHandler;
 
-			AvailableComPorts = new ObservableCollection<string>(SerialPort.GetPortNames().OrderBy(name => name)); 
+			serialPortStream = new SerialPortStream();
+
+			AvailableComPorts = new ObservableCollection<string>(serialPortStream.GetPortNames().OrderBy(name => name));
+
 			Protocols = new ObservableCollection<string> { "TCP", "UDP" };
 			AvailableBaudRates = new ObservableCollection<int> 
 			{ 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 460800, 921600, 230400 };
@@ -104,6 +109,8 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private int? _selectedPort;
 
+		[ObservableProperty]
+		private string _selectedPortText;
 
 		[ObservableProperty]
 		private string _selectedProtocol;
@@ -111,11 +118,11 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private ObservableCollection<string> _protocols = new();
 
-		partial void OnPortInputChanged(string? value)
+		partial void OnSelectedPortTextChanged(string oldValue, string newValue)
 		{
-			_errors[nameof(PortInput)] = new();
+			_errors[nameof(SelectedPortText)] = new();
 
-			if (int.TryParse(value, out var port))
+			if (int.TryParse(newValue, out int port))
 			{
 				if (port is >= 1024 and <= 65535)
 				{
@@ -123,15 +130,19 @@ namespace SBC.WPF.ViewModels
 				}
 				else
 				{
-					_errors[nameof(PortInput)].Add("Port must be between 1024 and 65535");
+					SelectedPort = null;
+					_errors[nameof(SelectedPortText)].Add("Port must be between 1024 and 65535");
 				}
 			}
 			else
 			{
-				_errors[nameof(PortInput)].Add("Port must be a number");
+				SelectedPort = null;
+				_errors[nameof(SelectedPortText)].Add("Port must be a number");
 			}
 
-			ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(nameof(PortInput)));
+			ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(nameof(SelectedPortText)));
+			OnPropertyChanged(nameof(HasPortError)); // <-- manually notify
+			OnPropertyChanged(nameof(PortErrorMessage));
 		}
 
 		[RelayCommand]
@@ -210,7 +221,7 @@ namespace SBC.WPF.ViewModels
 		{
 			AvailableComPorts?.Clear();
 
-			foreach (var port in SerialPort.GetPortNames().OrderBy(name => name))
+			foreach (var port in serialPortStream.GetPortNames().OrderBy(name => name))
 				AvailableComPorts?.Add(port);
 
 			if (AvailableComPorts.Any())
@@ -220,6 +231,12 @@ namespace SBC.WPF.ViewModels
 		private readonly Dictionary<string, List<string>> _errors = new();
 
 		public bool HasErrors => _errors.Any();
+
+		public bool HasPortError =>
+								_errors.TryGetValue(nameof(SelectedPortText), out var list) && list?.Count > 0;
+
+		public string? PortErrorMessage =>
+								_errors.TryGetValue(nameof(SelectedPortText), out var list) ? list.FirstOrDefault() : null;
 
 		public bool HasIpError =>
 								_errors.ContainsKey(nameof(IPPart1)) ||

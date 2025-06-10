@@ -15,12 +15,13 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:MainWindowViewModel"
+    Background="White"
     ExtendClientAreaChromeHints="NoChrome"
     ExtendClientAreaTitleBarHeightHint="-1"
     ExtendClientAreaToDecorationsHint="True"
-    Icon="/Assets/avalonia-logo.ico"
     PointerMoved="Window_PointerMoved"
     PointerPressed="Window_PointerPressed"
+    TransparencyLevelHint="None"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Design.DataContext>
@@ -173,11 +174,14 @@
                     <ListBox.Styles>
                         <!--  Base Style  -->
                         <Style Selector="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Foreground" Value="Black" />
                             <Setter Property="Padding" Value="10,6" />
                             <Setter Property="Cursor" Value="Hand" />
                             <Setter Property="MinHeight" Value="32" />
                             <Setter Property="HorizontalContentAlignment" Value="Left" />
                             <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="ToolTip.Tip" Value="{Binding Name}" />
                             <Setter Property="Template">
                                 <ControlTemplate>
                                     <Border
@@ -223,11 +227,9 @@
                         <!--  Header  -->
                         <Grid Grid.Row="0" ColumnDefinitions="*,Auto, Auto">
                             <CheckBox
-                                VerticalAlignment="Center"
-                                BorderBrush="Black"
                                 Click="IsAllSelected_Click"
                                 Content="Test Cases"
-                                FontWeight="Medium"
+                                Foreground="Black"
                                 IsChecked="{Binding IsAllSelected, Mode=TwoWay}"
                                 IsThreeState="True" />
                             <TextBlock
@@ -236,6 +238,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontWeight="Medium"
+                                Foreground="Black"
                                 Text="Status" />
                         </Grid>
 
@@ -243,21 +246,24 @@
                         <ScrollViewer
                             Grid.Row="1"
                             MinHeight="100"
+                            Margin="0,0,5,0"
+                            IsDeferredScrollingEnabled="True"
                             VerticalScrollBarVisibility="Auto">
                             <ItemsControl ItemsSource="{Binding Testcases}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="{x:Type models:TestCase}">
                                         <Grid Margin="0,5,0,0" ColumnDefinitions="*, Auto, Auto">
                                             <CheckBox
-                                                Margin="0,10,10,0"
+                                                Margin="0,2,10,0"
                                                 BorderBrush="Black"
                                                 Content="{Binding Name}"
+                                                Foreground="Black"
                                                 IsChecked="{Binding IsSelected, Mode=TwoWay}" />
                                             <Ellipse
                                                 Grid.Column="1"
                                                 Width="14"
                                                 Height="14"
-                                                Margin="0,0,15,0"
+                                                Margin="0,0,25,0"
                                                 HorizontalAlignment="Left"
                                                 VerticalAlignment="Center"
                                                 Fill="{Binding StatusColor}"
@@ -304,14 +310,13 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     FontWeight="Medium"
+                    Foreground="Black"
                     Text="Iterations" />
 
                 <NumericUpDown
                     Margin="80,0,10,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
-                    CornerRadius="3"
-                    Cursor="Hand"
                     Increment="1"
                     Maximum="100"
                     Minimum="0"
@@ -320,6 +325,7 @@
 
                 <Button
                     HorizontalAlignment="Right"
+                    Classes="run-style"
                     Command="{Binding RunTestCommand}"
                     Content="Run" />
 
@@ -328,9 +334,13 @@
                     Margin="10,10,0,10"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
-                    <Button Click="ExportLogs_Click" Content="Export" />
+                    <Button
+                        Classes="run-style"
+                        Click="ExportLogs_Click"
+                        Content="Export" />
                     <Button
                         Margin="10,10,0,10"
+                        Classes="run-style"
                         Command="{Binding ClearLogsCommand}"
                         Content="Clear" />
                 </StackPanel>
@@ -356,6 +366,63 @@
                     Foreground="White"
                     Text="Serial Number: N/A" />
 
+                <StackPanel
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Background="Transparent"
+                    Orientation="Horizontal"
+                    Spacing="5">
+
+                    <!--  Serial Button  -->
+                    <Button
+                        Width="35"
+                        Height="35"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Grid x:Name="RootGrid" Background="Transparent">
+                                    <Image
+                                        Width="14"
+                                        Height="14"
+                                        Source="{StaticResource icons_VGA_VectorDrawingImage}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Button.Styles>
+                            <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                                <Setter Property="Background" Value="{StaticResource ThemeBrush}" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <!--  Ethernet Button  -->
+                    <Button
+                        Width="35"
+                        Height="35"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Grid x:Name="RootGrid" Background="Transparent">
+                                    <Image
+                                        Width="14"
+                                        Height="14"
+                                        Source="{StaticResource icons_EtherNet_VectorDrawingImage}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Button.Styles>
+                            <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                                <Setter Property="Background" Value="{StaticResource ThemeBrush}" />
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                </StackPanel>
+
                 <!--  Hamburger Menu Button  -->
                 <Button
                     Grid.Column="3"
@@ -364,12 +431,8 @@
                     Margin="0,0,10,0"
                     Padding="5"
                     VerticalAlignment="Center"
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    BorderThickness="0"
                     Cursor="Hand">
                     <Button.Content>
-
                         <Image x:Name="HamburgerIcon">
                             <Image.Styles>
                                 <Style Selector="Image">
@@ -387,15 +450,21 @@
                     <Button.Flyout>
                         <Flyout Placement="TopEdgeAlignedRight">
                             <Flyout.Content>
-                                <StackPanel>
-                                    <MenuItem Header="About" IsEnabled="False" />
-                                    <MenuItem Command="{Binding APIHelpCommand}" Header="API Help" />
-                                    <MenuItem Header="User Manual" IsEnabled="False" />
-                                    <MenuItem Command="{Binding ExportApiLogsCommand}" Header="API Logs" />
-                                    <MenuItem Header="Generate Report" IsEnabled="False" />
-                                    <MenuItem Command="{Binding OpenConnectionSettingsCommand}" Header="Connection Settings" />
-                                    <MenuItem Command="{Binding ExitCommand}" Header="Exit" />
-                                </StackPanel>
+                                <Border
+                                    Padding="4"
+                                    Background="White"
+                                    BorderThickness="0"
+                                    CornerRadius="2">
+                                    <StackPanel>
+                                        <MenuItem Header="About" IsEnabled="False" />
+                                        <MenuItem Command="{Binding APIHelpCommand}" Header="API Help" />
+                                        <MenuItem Header="User Manual" IsEnabled="False" />
+                                        <MenuItem Command="{Binding ExportApiLogsCommand}" Header="API Logs" />
+                                        <MenuItem Header="Generate Report" IsEnabled="False" />
+                                        <MenuItem Command="{Binding OpenConnectionSettingsCommand}" Header="Connection Settings" />
+                                        <MenuItem Command="{Binding ExitCommand}" Header="Exit" />
+                                    </StackPanel>
+                                </Border>
                             </Flyout.Content>
                         </Flyout>
                     </Button.Flyout>

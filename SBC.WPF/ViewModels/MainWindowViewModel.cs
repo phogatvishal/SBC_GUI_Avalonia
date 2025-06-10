@@ -287,7 +287,7 @@ namespace SBC.WPF.ViewModels
 		}
 
 		[RelayCommand]
-		private void APIHelp()
+		private async Task APIHelp()
 		{
 			string helpFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Docs", "SBC.chm");
 
@@ -315,12 +315,12 @@ namespace SBC.WPF.ViewModels
 			}
 			catch (Exception ex)
 			{
-				_exceptionHandler.ShowMessageAsync(null, $"Failed to open help file");
+				await _exceptionHandler.ShowMessageAsync(null, $"Failed to open help file");
 			}
 		}
 
 		[RelayCommand]
-		private async void OpenConnectionSettings()
+		private async Task OpenConnectionSettings()
 		{
 			try
 			{

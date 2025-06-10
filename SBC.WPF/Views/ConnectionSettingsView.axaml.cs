@@ -1,6 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using SBC.WPF.ViewModels;
 
 namespace SBC.WPF;
@@ -11,7 +9,10 @@ public partial class ConnectionSettingsView : Window
     {
         InitializeComponent();
         DataContext = connectionSettingsViewModel;
-    }
+
+		// Disable native OS borders and title bar
+		SystemDecorations = SystemDecorations.None;
+	}
 
 	private void CloseButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
 	{
