@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\SBCSplashScreen3.1.jpg" />
     <None Remove="Resources\Data\Tests.json" />
     <None Remove="Resources\Docs\SBC.chm" />
     <None Remove="Resources\Icons\appicon.ico" />
@@ -23,7 +24,6 @@
     <None Remove="Resources\Icons\Maximise.svg" />
     <None Remove="Resources\Icons\Minimize.svg" />
     <None Remove="Resources\Icons\Restore Down.svg" />
-    <None Remove="Resources\Icons\SBCSplashScreen.svg" />
     <None Remove="Resources\Icons\Sub Menu - Selected.svg" />
     <None Remove="Resources\Icons\Sub Menu.svg" />
     <None Remove="Resources\Icons\VGA Vector - Connected.svg" />
@@ -48,6 +48,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RJCP.SerialPortStream" Version="3.0.3" />
+    <PackageReference Include="Svg.Skia" Version="3.0.3" />
     <PackageReference Include="System.IO.Ports" Version="9.0.5" />
     <PackageReference Include="System.Text.Json" Version="9.0.4" />
   </ItemGroup>
@@ -60,9 +61,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <AvaloniaResource Include="Resources\Icons\appicon.ico" />
-    <AvaloniaResource Include="Resources\Icons\SBCSplashScreen.svg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </AvaloniaResource>
     <Content Include="Resources\Icons\Close Vector.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

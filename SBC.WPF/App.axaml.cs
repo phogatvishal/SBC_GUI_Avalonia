@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Themes.Fluent;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
-using SBC.WPF.Interfaces;
 using SBC.WPF.Services;
+using SBC.WPF.Views;
 using System;
 
 namespace SBC.WPF
@@ -20,15 +20,29 @@ namespace SBC.WPF
 		{
 			if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 			{
-				var bootstrapper = new Bootstrapper();
-				bootstrapper.Build();
+				var splashScreen = new SplashScreenWindow();
+				splashScreen.Show();
 
-				var exceptionHandler = bootstrapper.ServiceProvider.GetRequiredService<IExceptionHandlerService>();
-				exceptionHandler.RegisterGlobalHandlers();
-
-				bootstrapper.Run(desktop);
+				var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(2000) };
+				timer.Tick += (sender, e) =>
+				{
+					timer.Stop();
+					InitializeMainApp(desktop);
+					splashScreen.Close();
+				};
+				timer.Start();
 			}
 			base.OnFrameworkInitializationCompleted();
+		}
+
+		private void InitializeMainApp(IClassicDesktopStyleApplicationLifetime desktop)
+		{
+			var bootstrapper = new Bootstrapper();
+			bootstrapper.Build();
+
+			// Get main window from DI or create directly
+			desktop.MainWindow = bootstrapper.ServiceProvider.GetRequiredService<MainWindow>();
+			desktop.MainWindow.Show();
 		}
 	}
 }
