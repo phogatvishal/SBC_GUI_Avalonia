@@ -29,12 +29,12 @@
         <ProgressBar
             Width="330"
             Height="5"
-            Margin="20,300,140,0"
+            Margin="80,300,100,0"
             HorizontalAlignment="Right"
             IsIndeterminate="True" />
 
         <TextBlock
-            Margin="90,0,30,10"
+            Margin="10,0,30,60"
             HorizontalAlignment="Left"
             VerticalAlignment="Bottom"
             FontSize="10"
@@ -42,7 +42,7 @@
             Text="{Binding VersionText}" />
 
         <TextBlock
-            Margin="0,0,90,10"
+            Margin="150,0,15,60"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
             FontSize="10"
