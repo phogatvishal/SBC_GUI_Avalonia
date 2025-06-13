@@ -23,6 +23,7 @@
     <None Remove="Resources\Icons\LFT logo.svg" />
     <None Remove="Resources\Icons\Maximise.svg" />
     <None Remove="Resources\Icons\Minimize.svg" />
+    <None Remove="Resources\Icons\questionMark.png" />
     <None Remove="Resources\Icons\Restore Down.svg" />
     <None Remove="Resources\Icons\Sub Menu - Selected.svg" />
     <None Remove="Resources\Icons\Sub Menu.svg" />
@@ -43,6 +44,7 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
@@ -61,6 +63,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <AvaloniaResource Include="Resources\Icons\appicon.ico" />
+    <AvaloniaResource Include="Resources\Icons\questionMark.png" />
     <Content Include="Resources\Icons\Close Vector.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

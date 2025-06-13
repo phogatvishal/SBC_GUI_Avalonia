@@ -13,14 +13,14 @@ namespace SBC.WPF.Services
 {
 	public class CInterface : ICInterface
 	{
-		private TestRoot _testData;
+		private TestRoot? _testData;
 
 		public CInterface()
 		{
 			LoadTestData();
 		}
 
-		public void Connect(InterfaceConnection interfaceType, string comPortOrIp, int baudRateOrPort, string protocol)
+		public void Connect(InterfaceConnection interfaceType, string? comPortOrIp, int baudRateOrPort, string? protocol)
 		{
 
 		}
@@ -68,7 +68,7 @@ namespace SBC.WPF.Services
 				int passCount = 0, failCount = 0;
 
 				string groupKey = group.ToString(); // e.g., Group_Interface
-				var selectedGroup = _testData.Test_Groups.FirstOrDefault(g => g.Type == groupKey);
+				var selectedGroup = _testData?.Test_Groups.FirstOrDefault(g => g.Type == groupKey);
 
 				if (selectedGroup == null)
 				{

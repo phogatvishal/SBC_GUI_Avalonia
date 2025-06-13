@@ -25,7 +25,7 @@ namespace SBC.WPF.Models
 		{
 			if (!value.HasValue) return;
 
-			foreach (var testCase in testcases)
+			foreach (var testCase in Testcases)
 			{
 				if (testCase.IsSelected != value.Value)
 					testCase.IsSelected = value.Value;
@@ -34,15 +34,15 @@ namespace SBC.WPF.Models
 
 		public void UpdateSelectAllCheckbox()
 		{
-			if (testcases.Count == 0)
+			if (Testcases.Count == 0)
 			{
 				IsAllSelected = false;
 				return;
 			}
 
-			IsAllSelected = testcases.All(tc => tc.IsSelected)
+			IsAllSelected = Testcases.All(tc => tc.IsSelected)
 				? true
-				: testcases.All(tc => !tc.IsSelected)
+				: Testcases.All(tc => !tc.IsSelected)
 					? false
 					: (bool?)null;
 		}

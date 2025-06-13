@@ -5,18 +5,80 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SBC.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="{Binding Title}"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    Width="450"
+    Height="190"
     x:DataType="local:ExceptionDialog"
+    Background="White"
+    CanResize="False"
+    ExtendClientAreaChromeHints="NoChrome"
+    ExtendClientAreaTitleBarHeightHint="-1"
+    ExtendClientAreaToDecorationsHint="True"
+    ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
-    <StackPanel Margin="20" Spacing="10">
-        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-        <Button
-            Width="80"
-            HorizontalAlignment="Right"
-            Click="OnOkClick"
-            Content="OK" />
-    </StackPanel>
+
+    <Grid RowDefinitions="25, *">
+        <!--  Header with Close Button  -->
+        <DockPanel Grid.Row="0" Background="{StaticResource HeaderBrush}">
+            <Button
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Click="CloseButton_Click"
+                DockPanel.Dock="Right"
+                FontWeight="Bold"
+                Foreground="{DynamicResource ButtonForegroundColor}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" Background="Transparent">
+                            <Image
+                                Width="14"
+                                Height="14"
+                                Source="{StaticResource icons_Close_VectorDrawingImage}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Styles>
+                    <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                        <Setter Property="Background" Value="Red" />
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </DockPanel>
+
+        <!--  Main Content  -->
+        <StackPanel Grid.Row="1" Margin="20">
+            <StackPanel Orientation="Horizontal">
+                <Image
+                    Width="24"
+                    RenderOptions.BitmapInterpolationMode="HighQuality"
+                    Source="/Resources/Icons/warningIcon.png" />
+                <TextBlock
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="{Binding TitleText}" />
+            </StackPanel>
+
+            <TextBlock
+                Margin="35,10,0,0"
+                FontSize="14"
+                Text="{Binding Message}"
+                TextWrapping="Wrap" />
+
+            <StackPanel
+                Margin="50,10,0,0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    Classes="dialog-style"
+                    Click="OnOkClick"
+                    Content="OK" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>

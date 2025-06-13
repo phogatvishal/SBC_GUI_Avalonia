@@ -19,11 +19,6 @@ public partial class APILogView : Window
 		SystemDecorations = SystemDecorations.None;
 	}
 
-	private async void ExportLogsButton_Click(object? sender, RoutedEventArgs e)
-	{
-		await _apiLogViewModel.ExportLogsAsync(this); 
-	}
-
 	private void CloseButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
 	{
 		Close();
@@ -32,16 +27,5 @@ public partial class APILogView : Window
 	protected override void OnClosed(EventArgs e)
 	{
 		base.OnClosed(e);
-	}
-
-	private void OnHeaderPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
-	{
-		if (e.GetCurrentPoint(null).Properties.IsLeftButtonPressed)
-		{
-			if (this is Window window)
-			{
-				window.BeginMoveDrag(e);
-			}
-		}
 	}
 }

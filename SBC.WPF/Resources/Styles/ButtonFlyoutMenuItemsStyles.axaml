@@ -1,0 +1,45 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Add Styles Here  -->
+	
+    <!--  MenuItem  -->
+    <!--  Default MenuItem style  -->
+    <Style Selector="MenuItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+
+    <!--  Only change text color on hover  -->
+    <Style x:SetterTargetType="MenuItem" Selector="MenuItem:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeColor}" />
+    </Style>
+
+    <!--  Selected/active (if used)  -->
+    <Style x:SetterTargetType="MenuItem" Selector="MenuItem:pressed">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeColor}" />
+    </Style>
+
+    <Style x:SetterTargetType="MenuItem" Selector="MenuItem:disabled">
+        <Setter Property="Foreground" Value="Red" />
+    </Style>
+
+    <!--  Custom class for disabled appearance  -->
+    <Style Selector="MenuItem.disabled">
+        <Setter Property="Foreground" Value="#888888" />
+    </Style>
+
+    <!--  Button Fly-out  -->
+    <Style Selector="FlyoutPresenter">
+        <Setter Property="Background" Value="{DynamicResource ButtonForegroundColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonForegroundColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+</Styles>

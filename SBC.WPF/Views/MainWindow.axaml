@@ -16,6 +16,7 @@
     d:DesignWidth="800"
     x:DataType="vm:MainWindowViewModel"
     Background="White"
+    Closing="Window_Closing"
     ExtendClientAreaChromeHints="NoChrome"
     ExtendClientAreaTitleBarHeightHint="-1"
     ExtendClientAreaToDecorationsHint="True"
@@ -339,7 +340,7 @@
                         Click="ExportLogs_Click"
                         Content="Export" />
                     <Button
-                        Margin="10,10,0,10"
+                        Margin="10,10,20,10"
                         Classes="run-style"
                         Command="{Binding ClearLogsCommand}"
                         Content="Clear" />
@@ -458,11 +459,14 @@
                                     <StackPanel>
                                         <MenuItem Header="About" IsEnabled="False" />
                                         <MenuItem Command="{Binding APIHelpCommand}" Header="API Help" />
-                                        <MenuItem Header="User Manual" IsEnabled="False" />
+                                        <MenuItem
+                                            Classes="disabled"
+                                            Header="User Manual"
+                                            IsEnabled="False" />
                                         <MenuItem Command="{Binding ExportApiLogsCommand}" Header="API Logs" />
                                         <MenuItem Header="Generate Report" IsEnabled="False" />
                                         <MenuItem Command="{Binding OpenConnectionSettingsCommand}" Header="Connection Settings" />
-                                        <MenuItem Command="{Binding ExitCommand}" Header="Exit" />
+                                        <MenuItem Click="MenuItem_Click_1" Header="Exit" />
                                     </StackPanel>
                                 </Border>
                             </Flyout.Content>

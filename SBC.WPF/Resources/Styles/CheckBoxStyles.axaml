@@ -1,0 +1,74 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Add Styles Here  -->
+
+    <!--  Check-box  -->
+    <Style Selector="CheckBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Border
+                            x:Name="Border"
+                            Grid.Column="0"
+                            Width="14"
+                            Height="14"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            CornerRadius="2" />
+
+                        <Path
+                            x:Name="CheckMark"
+                            Grid.Column="0"
+                            Margin="3"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M-2,3 L1,6 L6,1"
+                            IsVisible="{TemplateBinding IsChecked}"
+                            Stroke="White"
+                            StrokeThickness="1.5" />
+
+                        <ContentPresenter
+                            Grid.Column="1"
+                            Margin="6,0,0,0"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="Center"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            Foreground="{TemplateBinding Foreground}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--  Checked state: set background  -->
+    <Style x:SetterTargetType="Border" Selector="CheckBox:checked /template/ #Border">
+        <Setter Property="Background" Value="{DynamicResource ThemeColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style x:SetterTargetType="Path" Selector="CheckBox:checked /template/ #CheckMark">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!--  Indeterminate state: set background  -->
+    <Style x:SetterTargetType="Border" Selector="CheckBox:indeterminate /template/ #Border">
+        <Setter Property="Background" Value="{DynamicResource ThemeColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <!--  Indeterminate state: show custom mark  -->
+    <Style x:SetterTargetType="Path" Selector="CheckBox:indeterminate /template/ #CheckMark">
+        <Setter Property="IsVisible" Value="True" />
+        <Setter Property="Data" Value="M-1,1 L5,1 L5,7 L-1,7 Z" />
+    </Style>
+</Styles>

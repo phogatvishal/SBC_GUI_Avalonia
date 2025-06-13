@@ -5,11 +5,16 @@
     <Color x:Key="ThemeColor">#3D79D1</Color>
     <Color x:Key="ButtonBackgroundColor">#3D79D1</Color>
     <Color x:Key="ButtonForegroundColor">White</Color>
+    <Color x:Key="ScrollBackgroundColor">#D9D9D9</Color>
+    <Color x:Key="ButtonHoverColor">#3d3dd1</Color>
+    <Color x:Key="ButtonPointerOverColor">#2e2eb8</Color>
 
     <!--  Brush resources  -->
     <SolidColorBrush x:Key="HeaderBrush" Color="{StaticResource HeaderColor}" />
     <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{StaticResource ButtonBackgroundColor}" />
     <SolidColorBrush x:Key="ButtonForegroundBrush" Color="{StaticResource ButtonForegroundColor}" />
     <SolidColorBrush x:Key="ThemeBrush" Color="{StaticResource ThemeColor}" />
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="{StaticResource ButtonHoverColor}" />
+    <SolidColorBrush x:Key="ButtonPointerOverBrush" Color="{StaticResource ButtonPointerOverColor}" />
 
 </ResourceDictionary>

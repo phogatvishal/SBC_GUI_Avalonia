@@ -26,7 +26,7 @@ namespace SBC.WPF.ViewModels
 		private readonly ISBCInteropService _interopService;
 		private readonly IServiceProvider _serviceProvider;
 		private readonly IExceptionHandlerService _exceptionHandler;
-		public ILoggerService _logger;
+		private readonly ILoggerService _logger;
 		private APILogView apiLogView;
 
 		[ObservableProperty]
@@ -39,7 +39,7 @@ namespace SBC.WPF.ViewModels
 		private TestGroup? _selectedTestGroup;
 
 		[ObservableProperty]
-		private ObservableCollection<TestGroup> _testGroups = new();
+		private ObservableCollection<TestGroup>? _testGroups = new();
 
 		public ObservableCollection<LogLine> LogLines { get; } = new();
 
@@ -98,8 +98,8 @@ namespace SBC.WPF.ViewModels
 				}
 				group.IsAllSelected = false; // force parent unchecked
 
-				SelectedTestGroup = TestGroups.FirstOrDefault();
 			}
+			SelectedTestGroup = TestGroups.FirstOrDefault();
 		}
 
 		[RelayCommand]

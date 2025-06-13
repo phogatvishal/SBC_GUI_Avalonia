@@ -39,8 +39,12 @@ namespace SBC.WPF.Services
 				var logger = provider.GetRequiredService<ILoggerService>();
 				return new SBCInteropCallerService(new CInterface(), logger);
 			});
+			services.AddTransient<ExceptionDialog>();
 			services.AddSingleton<IExceptionHandlerService, ExceptionHandlerService>();
 			services.AddSingleton<ILoggerService>(provider => new LoggerService("logs.log", "apilogs.log"));
+
+			services.AddTransient<ConfirmDialog>();
+			services.AddTransient<ConfirmDialogViewModel>();
 		}
 
 		public void Run(IClassicDesktopStyleApplicationLifetime desktop)

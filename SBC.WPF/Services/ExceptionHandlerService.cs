@@ -41,7 +41,16 @@ namespace SBC.WPF.Services
 			Dispatcher.UIThread.Post(async () =>
 			{
 				var dialog = new ExceptionDialog(title, exception.Message);
-				await dialog.ShowDialog(GetMainWindow());
+				var mainWindow = GetMainWindow();
+
+				if (mainWindow != null)
+				{
+					await dialog.ShowDialog(mainWindow);
+				}
+				else
+				{
+					dialog.Show();
+				}
 			});
 		}
 
@@ -51,67 +60,100 @@ namespace SBC.WPF.Services
 			{
 				return desktop.MainWindow;
 			}
-
 			return null;
 		}
 
-		public async Task ShowMessageAsync(string? title, string message)
+		public async Task<bool> ShowMessageAsync(string? title, string message)
 		{
-			Window dialog = null;
-			dialog = new Window
+			var tcs = new TaskCompletionSource<bool>();
+
+			// Create buttons
+			var okButton = new Button
 			{
-				Title = title,
-				Width = 250,
-				SizeToContent = SizeToContent.Height,
-				WindowStartupLocation = WindowStartupLocation.CenterOwner,
-				BorderBrush = new SolidColorBrush(Color.Parse("#999999")),
-				BorderThickness = new Thickness(1),
-				Content = new StackPanel
-				{
-					Margin = new Thickness(10),
-					Children =
-				{
-					new TextBlock
-					{
-						Text = message,
-						HorizontalAlignment = HorizontalAlignment.Center,
-						TextWrapping = TextWrapping.Wrap,
-						Margin = new Thickness(0, 0, 0, 20)
-					},
-					new Grid
-					{
-						HorizontalAlignment = HorizontalAlignment.Center,
-						ColumnDefinitions = { new ColumnDefinition() },
-						Children =
-						{
-							new Button
-							{
-								Content = "OK",
-								Width = 70,
-								Height = 30,
-								HorizontalContentAlignment = HorizontalAlignment.Center,
-								HorizontalAlignment = HorizontalAlignment.Center,
-								Command = new RelayCommand(() => dialog.Close())
-							}
-						}
-					}
-				}
-				}
+				Content = "OK",
+				Width = 80,
+				Height = 32,
+				Margin = new Thickness(5),
+				Background = Brushes.White,
+				Foreground = Brushes.Black
 			};
 
-			dialog.MinWidth = 300;
-			dialog.MaxWidth = 600;
+			var cancelButton = new Button
+			{
+				Content = "Cancel",
+				Width = 80,
+				Height = 32,
+				Margin = new Thickness(5),
+				Background = Brushes.White,
+				Foreground = Brushes.Black
+			};
 
-			// Try to copy theme from MainWindow explicitly
+			// Layout for buttons
+			var buttonPanel = new StackPanel
+			{
+				Orientation = Orientation.Horizontal,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				Children = { okButton, cancelButton }
+			};
+
+			// Main content panel
+			var contentPanel = new StackPanel
+			{
+				Margin = new Thickness(20),
+				Spacing = 10,
+				Children =
+		{
+			new TextBlock
+			{
+				Text = message,
+				TextWrapping = TextWrapping.Wrap,
+				Foreground = Brushes.Black
+			},
+			buttonPanel
+		}
+			};
+
+			// Create dialog window
+			var dialog = new Window
+			{
+				Title = title ?? "Message",
+				Width = 350,
+				SizeToContent = SizeToContent.Height,
+				WindowStartupLocation = WindowStartupLocation.CenterOwner,
+				Background = Brushes.White,
+				Foreground = Brushes.Black,
+				BorderBrush = new SolidColorBrush(Color.Parse("#999999")),
+				BorderThickness = new Thickness(1),
+				Content = contentPanel
+			};
+
+			// Button click logic
+			okButton.Click += (_, _) =>
+			{
+				tcs.TrySetResult(true);
+				dialog.Close();
+			};
+
+			cancelButton.Click += (_, _) =>
+			{
+				tcs.TrySetResult(false);
+				dialog.Close();
+			};
+
+			// Apply theme from MainWindow if available
 			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
 				desktop.MainWindow is { } mainWindow)
 			{
 				dialog.RequestedThemeVariant = mainWindow.ActualThemeVariant ?? ThemeVariant.Light;
 				dialog.Styles.AddRange(mainWindow.Styles);
+				await dialog.ShowDialog(mainWindow);
+			}
+			else
+			{
+				dialog.Show();
 			}
 
-			var owner = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-			await dialog.ShowDialog(owner);
+			return await tcs.Task;
 		}
 	}
 }

@@ -29,6 +29,7 @@
         <ProgressBar
             Width="330"
             Height="5"
+			Background="DarkOrange"
             Margin="80,300,100,0"
             HorizontalAlignment="Right"
             IsIndeterminate="True" />

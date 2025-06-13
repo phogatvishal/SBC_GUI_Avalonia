@@ -1,17 +1,13 @@
 <Window
-    x:Class="SBC.WPF.APILogView"
+    x:Class="SBC.WPF.ConfirmDialog"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:SBC.WPF.Models"
     xmlns:vm="using:SBC.WPF.ViewModels"
-    Title="APILogView"
-    Width="650"
-    Height="450"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    x:DataType="vm:APILogViewModel"
+    Width="400"
+    Height="170"
+    x:DataType="vm:ConfirmDialogViewModel"
     Background="White"
     CanResize="False"
     ExtendClientAreaChromeHints="NoChrome"
@@ -21,29 +17,11 @@
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
-    <Design.DataContext>
-        <vm:APILogViewModel />
-    </Design.DataContext>
-
-    <Grid RowDefinitions="35, *, Auto">
-
+    <Grid RowDefinitions="25, *">
         <DockPanel Grid.Row="0" Background="{StaticResource HeaderBrush}">
-            <Image
-                Margin="0,3"
-                HorizontalAlignment="Left"
-                Source="{StaticResource icons_LFT_logoDrawingImage}" />
-
-            <TextBlock
-                Margin="5,0,0,0"
-                VerticalAlignment="Center"
-                FontSize="16"
-                FontWeight="Normal"
-                Foreground="White"
-                Text="API Logs" />
-
             <Button
-                Width="35"
-                Height="35"
+                Width="20"
+                Height="20"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Background="Transparent"
@@ -71,36 +49,47 @@
             </Button>
         </DockPanel>
 
-        <TextBox
-            Grid.Row="1"
-            MinWidth="630"
-            HorizontalContentAlignment="Stretch"
-            AcceptsReturn="False"
-            Classes="api-styled"
-            ClipToBounds="True"
-            Focusable="False"
-            FontFamily="Consolas"
-            FontSize="12"
-            IsReadOnly="True"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            ScrollViewer.VerticalScrollBarVisibility="Auto"
-            Text="{Binding CombinedLogs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap" />
+        <StackPanel Grid.Row="1" Margin="20">
+            <StackPanel Orientation="Horizontal">
+                <Image
+                    Width="24"
+                    RenderOptions.BitmapInterpolationMode="HighQuality"
+                    Source="/Resources/Icons/questionMark.png" />
+                <TextBlock
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="{Binding Title}" />
+            </StackPanel>
 
-        <StackPanel
-            Grid.Row="2"
-            Margin="0,5,5,10"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal">
-            <Button
-                Classes="run-style"
-                Command="{Binding ExportLogsCommand}"
-                Content="Export" />
-            <Button
-                Margin="10,0,0,0"
-                Classes="run-style"
-                Command="{Binding ClearLogsCommand}"
-                Content="Clear" />
+            <StackPanel Margin="20,10,0,0">
+                <TextBlock
+                    FontSize="14"
+                    Text="{Binding Message}"
+                    TextWrapping="Wrap" />
+
+                <CheckBox
+                    Margin="0,5,0,0"
+                    Content="Don't ask again"
+                    IsChecked="{Binding DontAskAgain, Mode=TwoWay}"
+                    IsVisible="False" />
+            </StackPanel>
+
+            <StackPanel
+                Margin="50,20,0,0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="10">
+                <Button
+                    Classes="dialog-style"
+                    Click="Yes_Click"
+                    Content="Yes" />
+                <Button
+                    Classes="dialog-style"
+                    Click="No_Click"
+                    Content="No" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

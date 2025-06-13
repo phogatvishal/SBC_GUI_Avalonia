@@ -27,8 +27,10 @@ namespace SBC.WPF.Services
 			if (File.Exists(SettingsFilePath))
 			{
 				string json = File.ReadAllText(SettingsFilePath);
-				return JsonConvert.DeserializeObject<ConnectionSettings>(json);
+				var settings = JsonConvert.DeserializeObject<ConnectionSettings>(json);
+				return settings ?? new ConnectionSettings();
 			}
+
 			return new ConnectionSettings();
 		}
 	}

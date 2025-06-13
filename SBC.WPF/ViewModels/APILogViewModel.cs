@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia;
 
 namespace SBC.WPF.ViewModels
 {
@@ -49,17 +51,25 @@ namespace SBC.WPF.ViewModels
 				await _exceptionHandler.ShowMessageAsync(null, $"Failed to load Api-Logs");
 			}
 		}
-		
-		public async Task ExportLogsAsync(Window parent)
+
+		[RelayCommand]
+		public async Task ExportLogsAsync()
 		{
 			try
 			{
+				var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+				if (mainWindow is null)
+				{
+					await _exceptionHandler.ShowMessageAsync(null, "No window available for file picker.");
+					return;
+				}
+
 				var fileType = new FilePickerFileType("Text Files")
 				{
 					Patterns = new[] { "*.txt" }
 				};
 
-				var file = await parent.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+				var file = await mainWindow.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
 				{
 					Title = "Save API Logs As",
 					SuggestedFileName = "APILogs.txt",
@@ -79,9 +89,9 @@ namespace SBC.WPF.ViewModels
 					await writer.WriteAsync(logs);
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, $"Failed to export Api-Logs");
+				await _exceptionHandler.ShowMessageAsync(null, "Failed to export Api-Logs");
 			}
 		}
 

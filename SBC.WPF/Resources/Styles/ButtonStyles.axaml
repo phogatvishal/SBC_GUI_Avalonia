@@ -1,0 +1,99 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!--  Add Controls for Previewer Here  -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!--  Add Styles Here  -->
+
+    <!--  App Button  -->
+    <Style Selector="Button.run-style">
+        <Setter Property="Background" Value="{DynamicResource ThemeColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="MinWidth" Value="120" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Name="border"
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="3">
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        Foreground="{TemplateBinding Foreground}"
+                        RecognizesAccessKey="True" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <!--  Hover  -->
+    <Style Selector="Button.run-style:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}" />
+    </Style>
+    <!--  Pressed  -->
+    <Style Selector="Button.run-style:pressed">
+        <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBrush}" />
+    </Style>
+    <!--  Disabled  -->
+    <Style Selector="Button.run-style:disabled">
+        <Setter Property="Background" Value="#777" />
+        <Setter Property="Foreground" Value="#ccc" />
+    </Style>
+
+    <!--  App Button  -->
+    <Style Selector="Button.dialog-style">
+        <Setter Property="Background" Value="{DynamicResource ThemeColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundColor}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Padding" Value="10,5" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="MinWidth" Value="70" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Name="border"
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="3">
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        Foreground="{TemplateBinding Foreground}"
+                        RecognizesAccessKey="True" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <!--  Hover  -->
+    <Style Selector="Button.dialog-style:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}" />
+    </Style>
+    <!--  Pressed  -->
+    <Style Selector="Button.dialog-style:pressed">
+        <Setter Property="Background" Value="{DynamicResource ButtonPointerOverBrush}" />
+    </Style>
+    <!--  Disabled  -->
+    <Style Selector="Button.dialog-style:disabled">
+        <Setter Property="Background" Value="#777" />
+        <Setter Property="Foreground" Value="#ccc" />
+    </Style>
+</Styles>

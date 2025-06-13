@@ -16,10 +16,9 @@ namespace SBC.WPF.Services
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
-		private void LogCall(string methodName, string parameters, string result = null, Exception ex = null)
+		private void LogCall(string methodName, string parameters, string? result = null, Exception? ex = null)
 		{
 			var logBuilder = new StringBuilder();
-			//logBuilder.AppendLine($"{methodName}");
 
 			if (result == null)
 			{
@@ -38,7 +37,7 @@ namespace SBC.WPF.Services
 			_logger.APILog(logBuilder.ToString());
 		}
 
-		public void Connect(InterfaceConnection interfaceType, string comPortOrIp, int baudRateOrPort, string protocol)
+		public void Connect(InterfaceConnection interfaceType, string? comPortOrIp, int baudRateOrPort, string? protocol)
 		{
 			try
 			{
