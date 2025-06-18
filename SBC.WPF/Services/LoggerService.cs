@@ -14,7 +14,7 @@ namespace SBC.WPF.Services
 		private readonly ConcurrentQueue<string> _logQueue;
 		private readonly ConcurrentQueue<string> _apilogQueue;
 
-		public event Action<string> OnNewLogLine;
+		public event Action<string>? OnNewLogLine;
 
 		public LoggerService(string logFilePath, string apilogFilePath, int maxLogLines = 500)
 		{

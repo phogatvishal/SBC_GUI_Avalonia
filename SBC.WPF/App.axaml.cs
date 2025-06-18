@@ -1,8 +1,9 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using SBC.WPF.Interfaces;
 using SBC.WPF.Services;
 using SBC.WPF.Views;
 using System;
@@ -40,7 +41,9 @@ namespace SBC.WPF
 			var bootstrapper = new Bootstrapper();
 			bootstrapper.Build();
 
-			// Get main window from DI or create directly
+			var exceptionHandler = bootstrapper.ServiceProvider.GetRequiredService<IExceptionHandlerService>();
+			exceptionHandler.RegisterGlobalHandlers();
+
 			desktop.MainWindow = bootstrapper.ServiceProvider.GetRequiredService<MainWindow>();
 			desktop.MainWindow.Show();
 		}

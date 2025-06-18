@@ -17,6 +17,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using SBC.WPF.Enums;
+using SBC.WPF.Services;
+using Avalonia.Controls.Platform;
 
 namespace SBC.WPF.ViewModels
 {
@@ -105,42 +107,69 @@ namespace SBC.WPF.ViewModels
 		[RelayCommand]
 		private async Task RunTestAsync()
 		{
-			if (SelectedTestGroup == null)
+			try
 			{
-				Log("No tab selected.");
-				return;
-			}
-
-			var selectedTests = SelectedTestGroup.Testcases.Where(t => t.IsSelected).ToList();
-			if (!selectedTests.Any())
-			{
-				Log($"No test cases selected in '{SelectedTestGroup.Name}'");
-				return;
-			}
-
-			var bitMask = GetTestBitmask(SelectedTestGroup.Name);
-			Log($"Bit Mask: {bitMask}{Environment.NewLine}");
-
-			for (int i = 1; i <= SelectedIteration; i++)
-			{
-				Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...{Environment.NewLine}");
-				await Task.Delay(10); // Let UI update
-
-				foreach (var test in selectedTests)
+				if (SelectedTestGroup == null)
 				{
-					Log($"  - Executing: {test.Name}{Environment.NewLine}");
-					await Task.Delay(1); // Simulate small delay
+					Log("No tab selected.");
+					return;
 				}
 
-				Log("Test execution finished.");
+				var selectedTests = SelectedTestGroup.Testcases.Where(t => t.IsSelected).ToList();
+				if (!selectedTests.Any())
+				{
+					Log($"No test cases selected in '{SelectedTestGroup.Name}'");
+					return;
+				}
 
-				var result = _interopService.RunTest(
-					GetConnectionFromType(SelectedTestGroup.Type),
-					GetGroupFromTestType(SelectedTestGroup.Type),
-					bitMask);
+				var bitMask = GetTestBitmask(SelectedTestGroup.Name);
+				Log($"Bit Mask: {bitMask}{Environment.NewLine}");
 
-				Log(result.ToString());
-				UpdateTestResults(result.ToString(), SelectedTestGroup.Testcases);
+				bool retryAttempted = false;
+
+				for (int i = 1; i <= SelectedIteration; i++)
+				{
+					Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...{Environment.NewLine}");
+					await Task.Delay(10); // Let UI update
+
+					foreach (var test in selectedTests)
+					{
+						Log($"  - Executing: {test.Name}{Environment.NewLine}");
+						await Task.Delay(1); // Simulate small delay
+					}
+
+					Log("Test execution finished.");
+
+					try
+					{
+						var result = _interopService.RunTest(
+							GetConnectionFromType(SelectedTestGroup.Type),
+							GetGroupFromTestType(SelectedTestGroup.Type),
+							bitMask);
+
+						Log(result.ToString());
+						UpdateTestResults(result.ToString(), SelectedTestGroup.Testcases);
+					}
+					catch (Exception ex)
+					{
+						var userChoice = await _exceptionHandler.ShowExceptionDialogAsync("Test Execution Error",
+							"An error occurred while running the test.", ex.ToString(), canRetry: !retryAttempted); // only show Retry button on first failure
+
+						if (userChoice == ExceptionDialogResult.Retry && !retryAttempted)
+						{
+							retryAttempted = true;
+							i--; // retry current iteration
+							continue;
+						}
+
+						break; // exit loop on failure or after retry used
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				await _exceptionHandler.ShowExceptionDialogAsync("Critical Error",
+					"An unexpected error occurred while starting the test.", ex.ToString(), canRetry: false);
 			}
 		}
 
@@ -172,37 +201,45 @@ namespace SBC.WPF.ViewModels
 		[RelayCommand]
 		public async Task ExportLogsAsync(Window? parentWindow)
 		{
-			if (parentWindow == null)
+			try
 			{
-				Log("Export failed: Window not available.");
-				return;
-			}
-
-			var storage = parentWindow.StorageProvider;
-			if (storage == null || !storage.CanSave)
-			{
-				Log("Export failed: File save not supported.");
-				return;
-			}
-
-			var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
-			{
-				Title = "Save Logs As",
-				SuggestedFileName = "Logs.txt",
-				DefaultExtension = "txt",
-				FileTypeChoices = new[]
+				if (parentWindow == null)
 				{
-			new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
-			new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+					Log("Export failed: Window not available.");
+					return;
 				}
-			});
 
-			if (file != null)
+				var storage = parentWindow.StorageProvider;
+				if (storage == null || !storage.CanSave)
+				{
+					Log("Export failed: File save not supported.");
+					return;
+				}
+
+				var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+				{
+					Title = "Save Logs As",
+					SuggestedFileName = "Logs.txt",
+					DefaultExtension = "txt",
+					FileTypeChoices = new[]
+					{
+				new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
+				new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+			}
+				});
+
+				if (file != null)
+				{
+					await using var stream = await file.OpenWriteAsync();
+					using var writer = new StreamWriter(stream);
+					await writer.WriteAsync(GetLogText());
+					Log($"✅ Logs saved to {file.Name}{Environment.NewLine}{Environment.NewLine}");
+				}
+			}
+			catch (Exception ex)
 			{
-				await using var stream = await file.OpenWriteAsync();
-				using var writer = new StreamWriter(stream);
-				await writer.WriteAsync(GetLogText());
-				Log($"✅ Logs saved to {file.Name}{Environment.NewLine}{Environment.NewLine}");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error","An unexpected error occurred while exporting the logs.",ex.ToString(),canRetry: false);
 			}
 		}
 
@@ -255,21 +292,29 @@ namespace SBC.WPF.ViewModels
 
 		public async Task CheckConnectionStatus()
 		{
-			//UARTRESULT
-			var UARTresult = _interopService.GetConnectionStatus(InterfaceConnection.INTERFACE_UART);
+			try
+			{
+				//UARTRESULT
+				var UARTresult = _interopService.GetConnectionStatus(InterfaceConnection.INTERFACE_UART);
 
-			await Task.Delay(10);
+				await Task.Delay(10);
 
-			if (UARTresult == 1)
-				IsSerialConnected = true;
+				if (UARTresult == 1)
+					IsSerialConnected = true;
 
-			//ETHERNET
-			var Ethernetresult = _interopService.GetConnectionStatus(InterfaceConnection.INTERFACE_ETHERNET);
+				//ETHERNET
+				var Ethernetresult = _interopService.GetConnectionStatus(InterfaceConnection.INTERFACE_ETHERNET);
 
-			await Task.Delay(10);
+				await Task.Delay(10);
 
-			if (Ethernetresult == 1)
-				IsEthernetConnected = true;
+				if (Ethernetresult == 1)
+					IsEthernetConnected = true;
+			}
+			catch (Exception ex)
+			{
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while trying to retrieve the connection status.", ex.ToString(), canRetry: false);
+			}
 		}
 
 		private void Log(string message)
@@ -289,33 +334,62 @@ namespace SBC.WPF.ViewModels
 		[RelayCommand]
 		private async Task APIHelp()
 		{
-			string helpFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Docs", "SBC.chm");
-
-			if (!File.Exists(helpFilePath))
-			{
-				 _exceptionHandler.HandleException("Help File Error");
-				return;
-			}
-
 			try
 			{
-				// .chm files are only supported on Windows
+				string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Docs");
+				string chmPath = Path.Combine(basePath, "SBC.chm");
+				string pdfPath = Path.Combine(basePath, "SBC.pdf");
+
+				// Windows: Try to open .chm if it exists
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 				{
-					Process.Start(new ProcessStartInfo
+					if (File.Exists(chmPath))
 					{
-						FileName = helpFilePath,
-						UseShellExecute = true,
-					});
+						try
+						{
+							Process.Start(new ProcessStartInfo
+							{
+								FileName = chmPath,
+								UseShellExecute = true
+							});
+							return;
+						}
+						catch (Exception ex)
+						{
+							await _exceptionHandler.ShowExceptionDialogAsync(
+								"Error", "Failed to open CHM help file.", ex.ToString(), canRetry: false);
+							return;
+						}
+					}
+				}
+
+				// Fallback to PDF (cross-platform)
+				if (File.Exists(pdfPath))
+				{
+					try
+					{
+						Process.Start(new ProcessStartInfo
+						{
+							FileName = pdfPath,
+							UseShellExecute = true
+						});
+					}
+					catch (Exception ex)
+					{
+						await _exceptionHandler.ShowExceptionDialogAsync(
+							"Error", "Failed to open PDF help file.", ex.ToString(), canRetry: false);
+					}
 				}
 				else
 				{
-					_exceptionHandler.HandleException(".chm help files are not supported on this platform.");
+					await _exceptionHandler.ShowExceptionDialogAsync(
+						"Error", "Help file not found (CHM/PDF).", canRetry: false);
 				}
 			}
 			catch (Exception ex)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, $"Failed to open help file");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while trying to open API help file.", ex.ToString(), canRetry: false);
 			}
 		}
 
@@ -328,6 +402,8 @@ namespace SBC.WPF.ViewModels
 					return;
 
 				var mainWindow = desktop.MainWindow;
+				if (mainWindow is null)
+					return;
 
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
@@ -343,7 +419,8 @@ namespace SBC.WPF.ViewModels
 			}
 			catch (Exception ex)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, $"Failed to open connection settings page");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while trying to open Connection-Settings page.", ex.ToString(), canRetry: false);
 			}
 		}
 
@@ -357,7 +434,7 @@ namespace SBC.WPF.ViewModels
 		}
 
 		[RelayCommand]
-		private async Task ExportApiLogsAsync()
+		private async Task OpenExportApiLogsAsync()
 		{
 			try
 			{
@@ -375,7 +452,8 @@ namespace SBC.WPF.ViewModels
 			}
 			catch (Exception ex)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, $"Failed to open ExportApi-Logs page");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while trying to open API-Logs page.", ex.ToString(), canRetry: false);
 			}
 		}
 	}

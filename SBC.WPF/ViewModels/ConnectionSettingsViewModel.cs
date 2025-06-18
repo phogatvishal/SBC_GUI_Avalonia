@@ -8,7 +8,11 @@ using SBC.WPF.Interfaces;
 using SBC.WPF.Services;
 using System.Net;
 using SBC.WPF.Enums;
-using RJCP.IO.Ports;
+using System.IO.Ports;
+using System;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace SBC.WPF.ViewModels
 {
@@ -17,8 +21,6 @@ namespace SBC.WPF.ViewModels
 		private readonly MainWindowViewModel _mainWindowViewModel;
 		private readonly ISBCInteropService _interopService;
 		private readonly IExceptionHandlerService _exceptionHandler;
-		private readonly SerialPortStream serialPortStream;
-
 		public ObservableCollection<string> AvailableComPorts { get; }
 		public ObservableCollection<int> AvailableBaudRates { get; }
 		public ObservableCollection<string> Protocols { get; }
@@ -59,8 +61,7 @@ namespace SBC.WPF.ViewModels
 			_interopService = interopService;
 			_exceptionHandler = exceptionHandler;
 
-			serialPortStream = new SerialPortStream();
-			AvailableComPorts = new ObservableCollection<string>(serialPortStream.GetPortNames().OrderBy(name => name));
+			AvailableComPorts = new ObservableCollection<string>(SerialPort.GetPortNames().OrderBy(name => name));
 			AvailableBaudRates = new ObservableCollection<int> { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 460800, 921600, 230400 };
 			Protocols = new ObservableCollection<string> { "TCP", "UDP" };
 
@@ -132,46 +133,66 @@ namespace SBC.WPF.ViewModels
 			!int.TryParse(part, out int num) || num < 0 || num > 255 ? "0–255 only" : string.Empty;
 
 		[RelayCommand]
-		private void ApplySettings()
+		private async Task ApplySettings()
 		{
-			if (int.TryParse(SelectedPortText, out var parsedPort))
-				SelectedPort = parsedPort;
-
-			_mainWindowViewModel.IsSerialConnected = TestSerialConnection(SelectedComPort, SelectedBaudRate);
-			_mainWindowViewModel.IsEthernetConnected = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
-
-			var settings = new ConnectionSettings
+			try
 			{
-				SelectedComPort = SelectedComPort,
-				SelectedBaudRate = SelectedBaudRate,
-				SelectedIP = SelectedIP,
-				SelectedPort = SelectedPort,
-				SelectedProtocol = SelectedProtocol
-			};
+				if (int.TryParse(SelectedPortText, out var parsedPort))
+					SelectedPort = parsedPort;
 
-			SettingsService.SaveSettings(settings);
+				_mainWindowViewModel.IsSerialConnected = TestSerialConnection(SelectedComPort, SelectedBaudRate);
+				_mainWindowViewModel.IsEthernetConnected = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
 
-			if (_mainWindowViewModel.IsSerialConnected)
-				_interopService.Connect(InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
+				var settings = new ConnectionSettings
+				{
+					SelectedComPort = SelectedComPort,
+					SelectedBaudRate = SelectedBaudRate,
+					SelectedIP = SelectedIP,
+					SelectedPort = SelectedPort,
+					SelectedProtocol = SelectedProtocol
+				};
 
-			if (_mainWindowViewModel.IsEthernetConnected)
-				_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
+				SettingsService.SaveSettings(settings);
+
+				if (_mainWindowViewModel.IsSerialConnected)
+					_interopService.Connect(InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
+
+				if (_mainWindowViewModel.IsEthernetConnected)
+					_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
+			}
+			catch (Exception ex)
+			{
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while applying the settings.", ex.ToString(), canRetry: false);
+			}
 		}
 
 		[RelayCommand]
-		private void TestConnection()
+		private async Task TestConnection()
 		{
-			bool serial = TestSerialConnection(SelectedComPort, SelectedBaudRate);
-			bool ethernet = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
+			try
+			{
+				bool serial = TestSerialConnection(SelectedComPort, SelectedBaudRate);
+				bool ethernet = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
 
-			if (serial)
-				_interopService.Connect(InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
+				if (serial)
+					_interopService.Connect(InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
 
-			if (ethernet)
-				_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
+				if (ethernet)
+					_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
 
-			SerialStatusColor = serial ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
-			EthernetStatusColor = ethernet ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
+				SerialStatusColor = serial ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
+				EthernetStatusColor = ethernet ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
+
+				// Update main window view model
+				_mainWindowViewModel.IsSerialConnected = serial;
+				_mainWindowViewModel.IsEthernetConnected = ethernet;
+			}
+			catch (Exception ex)
+			{
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while Testing the applied settings.", ex.ToString(), canRetry: false);
+			}
 		}
 
 		private bool TestSerialConnection(string? port, int baudRate) => !string.IsNullOrEmpty(port) && baudRate > 0;
@@ -184,7 +205,7 @@ namespace SBC.WPF.ViewModels
 		public void RefreshCOMPorts()
 		{
 			AvailableComPorts.Clear();
-			foreach (var port in serialPortStream.GetPortNames().OrderBy(name => name))
+			foreach (var port in SerialPort.GetPortNames().OrderBy(name => name))
 				AvailableComPorts.Add(port);
 
 			if (AvailableComPorts.Any())

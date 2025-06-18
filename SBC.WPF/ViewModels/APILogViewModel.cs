@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
+using System.Linq;
 
 namespace SBC.WPF.ViewModels
 {
@@ -48,7 +49,8 @@ namespace SBC.WPF.ViewModels
 			}
 			catch (Exception ex)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, $"Failed to load Api-Logs");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while trying to load logs.", ex.ToString(), canRetry: false);
 			}
 		}
 
@@ -57,10 +59,16 @@ namespace SBC.WPF.ViewModels
 		{
 			try
 			{
-				var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+				var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+				var mainWindow = lifetime?.MainWindow;
+				var activeWindow = lifetime?.Windows.FirstOrDefault(w => w.IsActive);
+
 				if (mainWindow is null)
 				{
-					await _exceptionHandler.ShowMessageAsync(null, "No window available for file picker.");
+					await _exceptionHandler.ShowExceptionDialogAsync(
+						"Error",
+						"An unexpected error occurred while trying to access the window.",
+						canRetry: false);
 					return;
 				}
 
@@ -74,24 +82,25 @@ namespace SBC.WPF.ViewModels
 					Title = "Save API Logs As",
 					SuggestedFileName = "APILogs.txt",
 					FileTypeChoices = new List<FilePickerFileType>
-					{
-						fileType,
-						new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
-					},
+			{
+				fileType,
+				new FilePickerFileType("All Files") { Patterns = new[] { "*.*" } }
+			},
 					DefaultExtension = "txt"
 				});
 
 				if (file is not null)
 				{
-					var logs = CombinedLogs; // Or however you access log text
+					var logs = CombinedLogs;
 					await using var stream = await file.OpenWriteAsync();
 					using var writer = new StreamWriter(stream);
 					await writer.WriteAsync(logs);
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, "Failed to export Api-Logs");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred while exporting the logs.", ex.ToString(), canRetry: false);
 			}
 		}
 
@@ -106,7 +115,8 @@ namespace SBC.WPF.ViewModels
 			}
 			catch (Exception ex)
 			{
-				await _exceptionHandler.ShowMessageAsync(null, $"Failed to clear Api-Logs, please try again");
+				await _exceptionHandler.ShowExceptionDialogAsync(
+					"Error", "An unexpected error occurred.", ex.ToString(), canRetry: false);
 			}
 		}
 	}

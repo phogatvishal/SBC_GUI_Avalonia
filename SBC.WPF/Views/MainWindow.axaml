@@ -337,8 +337,10 @@
                     Orientation="Horizontal">
                     <Button
                         Classes="run-style"
-                        Click="ExportLogs_Click"
+                        Command="{Binding ExportLogsCommand}"
+                        CommandParameter="{Binding $parent[Window]}"
                         Content="Export" />
+
                     <Button
                         Margin="10,10,20,10"
                         Classes="run-style"
@@ -439,10 +441,6 @@
                                 <Style Selector="Image">
                                     <Setter Property="Source" Value="{StaticResource icons_Sub_MenuDrawingImage}" />
 
-                                    <!--<Style.Setters>
-											<Setter Property=""
-										</Style.Setters>-->
-
                                 </Style>
                             </Image.Styles>
                         </Image>
@@ -463,10 +461,10 @@
                                             Classes="disabled"
                                             Header="User Manual"
                                             IsEnabled="False" />
-                                        <MenuItem Command="{Binding ExportApiLogsCommand}" Header="API Logs" />
+                                        <MenuItem Command="{Binding OpenExportApiLogsCommand}" Header="API Logs" />
                                         <MenuItem Header="Generate Report" IsEnabled="False" />
                                         <MenuItem Command="{Binding OpenConnectionSettingsCommand}" Header="Connection Settings" />
-                                        <MenuItem Click="MenuItem_Click_1" Header="Exit" />
+                                        <MenuItem Click="Exit_Click" Header="Exit" />
                                     </StackPanel>
                                 </Border>
                             </Flyout.Content>

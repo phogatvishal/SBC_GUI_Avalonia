@@ -14,6 +14,8 @@ public partial class ConfirmDialog : Window
         InitializeComponent();
         _confirmDialogViewModel = confirmDialogViewModel;
 		DataContext = _confirmDialogViewModel;
+
+		SystemDecorations = SystemDecorations.None;
     }
 
 	private void Yes_Click(object? sender, RoutedEventArgs e)

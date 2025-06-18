@@ -12,8 +12,8 @@ public partial class APILogView : Window
 	public APILogView(APILogViewModel apiLogViewModel)
     {
         InitializeComponent();
-        DataContext = apiLogViewModel;
 		_apiLogViewModel = apiLogViewModel;
+		DataContext = _apiLogViewModel;
 
 		// Disable native OS borders and title bar
 		SystemDecorations = SystemDecorations.None;

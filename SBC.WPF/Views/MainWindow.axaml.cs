@@ -11,8 +11,6 @@ using SBC.WPF.Models;
 using Avalonia.Input;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel;
-
 
 namespace SBC.WPF.Views
 {
@@ -30,8 +28,8 @@ namespace SBC.WPF.Views
 		public MainWindow(MainWindowViewModel mainWindowViewModel, ILoggerService logger, IServiceProvider serviceProvider)
 		{
 			InitializeComponent();
-			DataContext = mainWindowViewModel;
 			_mainWindowViewModel = mainWindowViewModel;
+			DataContext = _mainWindowViewModel;
 
 			_lastWindowState = this.WindowState;
 
@@ -156,11 +154,6 @@ namespace SBC.WPF.Views
 			};
 		}
 
-		private async void ExportLogs_Click(object? sender, RoutedEventArgs e)
-		{
-			await _mainWindowViewModel.ExportLogsAsync(this); // this = Window
-		}
-
 		private void IsAllSelected_Click(object? sender, RoutedEventArgs e)
 		{
 			if (sender is CheckBox checkBox && checkBox.DataContext is TestGroup group)
@@ -263,7 +256,7 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private async void MenuItem_Click_1(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		private async void Exit_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
 		{
 			if (_confirmedExit) return;
 

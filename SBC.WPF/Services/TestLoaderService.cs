@@ -21,6 +21,11 @@ namespace SBC.WPF.Services
 					PropertyNameCaseInsensitive = true
 				});
 
+				if (parsed?.Test_Groups == null)
+				{
+					throw new InvalidDataException("Parsed test data is null or improperly formatted.");
+				}
+
 				foreach (var group in parsed.Test_Groups)
 				{
 					foreach (var test in group.Testcases)
@@ -31,9 +36,9 @@ namespace SBC.WPF.Services
 
 				return parsed.Test_Groups;
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw;
+				throw new Exception("Failed to load test groups.", ex);
 			}
 		}
 	}

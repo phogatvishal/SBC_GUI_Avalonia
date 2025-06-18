@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Avalonia.Controls;
+using SBC.WPF.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace SBC.WPF.Interfaces
@@ -9,7 +8,13 @@ namespace SBC.WPF.Interfaces
 	public interface IExceptionHandlerService
 	{
 		void RegisterGlobalHandlers();
-		void HandleException(string title, Exception ex = null);
-		Task<bool> ShowMessageAsync(string? title, string message);
+		void HandleException(string title, Exception ex);
+	
+		Task<ExceptionDialogResult> ShowExceptionDialogAsync(
+			string title,
+			string message,
+			string? details = null,
+			bool canRetry = false,
+			Window? parentWindow = null);
 	}
 }

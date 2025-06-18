@@ -1,14 +1,13 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Threading;
-using Avalonia;
-using SBC.WPF.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Avalonia.Layout;
-using Avalonia.Media;
 using Avalonia.Styling;
-using CommunityToolkit.Mvvm.Input;
+using Avalonia.Threading;
+using SBC.WPF.Interfaces;
+using SBC.WPF.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SBC.WPF.Services
 {
@@ -16,144 +15,68 @@ namespace SBC.WPF.Services
 	{
 		public void RegisterGlobalHandlers()
 		{
-			AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+			AppDomain.CurrentDomain.UnhandledException += (_, e) =>
 			{
 				if (e.ExceptionObject is Exception ex)
-				{
-					HandleException("Unhandled Exception", ex);
-				}
+					ShowExceptionDialog("Unhandled Exception", ex, false);
+
 				Environment.Exit(1);
 			};
 
-			TaskScheduler.UnobservedTaskException += (s, e) =>
+			TaskScheduler.UnobservedTaskException += (_, e) =>
 			{
-				HandleException("Unobserved Task Exception", e.Exception);
+				ShowExceptionDialog("Unobserved Task Exception", e.Exception, false);
 				e.SetObserved();
 			};
 		}
 
-		public void HandleException(string title, Exception exception)
+		public void HandleException(string title, Exception ex)
 		{
-			Console.WriteLine($"[{title}] {exception.Message}");
-			Console.WriteLine(exception.StackTrace);
+			Console.WriteLine($"[{title}] {ex.Message}\n{ex.StackTrace}");
+			ShowExceptionDialog(title, ex, false);
+		}
 
-			// Show a UI dialog using Avalonia dispatcher
+		public Task<ExceptionDialogResult> ShowExceptionDialogAsync(
+		string title,
+		string message,
+		string? details = null,
+		bool canRetry = false,
+		Window? parentWindow = null) 
+		{
+			return InternalShowDialog(title, message, details, canRetry, parentWindow);
+		}
+
+
+		private void ShowExceptionDialog(string title, Exception ex, bool canRetry)
+		{
 			Dispatcher.UIThread.Post(async () =>
 			{
-				var dialog = new ExceptionDialog(title, exception.Message);
-				var mainWindow = GetMainWindow();
-
-				if (mainWindow != null)
-				{
-					await dialog.ShowDialog(mainWindow);
-				}
-				else
-				{
-					dialog.Show();
-				}
+				await InternalShowDialog(title, ex.Message, ex.ToString(), canRetry);
 			});
 		}
-
-		private Window? GetMainWindow()
+		private async Task<ExceptionDialogResult> InternalShowDialog(string title, string message, string? details, bool canRetry, Window? parentWindow = null)
 		{
-			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-			{
-				return desktop.MainWindow;
-			}
-			return null;
-		}
+			var dialog = new ExceptionDialog(title, message, details, canRetry);
 
-		public async Task<bool> ShowMessageAsync(string? title, string message)
-		{
-			var tcs = new TaskCompletionSource<bool>();
+			var targetWindow = parentWindow
+				?? (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
+					?.Windows.FirstOrDefault(w => w.IsActive)
+				?? (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
+					?.MainWindow;
 
-			// Create buttons
-			var okButton = new Button
+			if (targetWindow is not null)
 			{
-				Content = "OK",
-				Width = 80,
-				Height = 32,
-				Margin = new Thickness(5),
-				Background = Brushes.White,
-				Foreground = Brushes.Black
-			};
-
-			var cancelButton = new Button
-			{
-				Content = "Cancel",
-				Width = 80,
-				Height = 32,
-				Margin = new Thickness(5),
-				Background = Brushes.White,
-				Foreground = Brushes.Black
-			};
-
-			// Layout for buttons
-			var buttonPanel = new StackPanel
-			{
-				Orientation = Orientation.Horizontal,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Children = { okButton, cancelButton }
-			};
-
-			// Main content panel
-			var contentPanel = new StackPanel
-			{
-				Margin = new Thickness(20),
-				Spacing = 10,
-				Children =
-		{
-			new TextBlock
-			{
-				Text = message,
-				TextWrapping = TextWrapping.Wrap,
-				Foreground = Brushes.Black
-			},
-			buttonPanel
-		}
-			};
-
-			// Create dialog window
-			var dialog = new Window
-			{
-				Title = title ?? "Message",
-				Width = 350,
-				SizeToContent = SizeToContent.Height,
-				WindowStartupLocation = WindowStartupLocation.CenterOwner,
-				Background = Brushes.White,
-				Foreground = Brushes.Black,
-				BorderBrush = new SolidColorBrush(Color.Parse("#999999")),
-				BorderThickness = new Thickness(1),
-				Content = contentPanel
-			};
-
-			// Button click logic
-			okButton.Click += (_, _) =>
-			{
-				tcs.TrySetResult(true);
-				dialog.Close();
-			};
-
-			cancelButton.Click += (_, _) =>
-			{
-				tcs.TrySetResult(false);
-				dialog.Close();
-			};
-
-			// Apply theme from MainWindow if available
-			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
-				desktop.MainWindow is { } mainWindow)
-			{
-				dialog.RequestedThemeVariant = mainWindow.ActualThemeVariant ?? ThemeVariant.Light;
-				dialog.Styles.AddRange(mainWindow.Styles);
-				await dialog.ShowDialog(mainWindow);
+				dialog.RequestedThemeVariant = targetWindow.ActualThemeVariant ?? ThemeVariant.Light;
+				dialog.Styles.AddRange(targetWindow.Styles);
+				return await dialog.ShowDialogAsync(targetWindow);
 			}
 			else
 			{
-				dialog.Show();
+				dialog.Show(); // fallback, not modal
+				return ExceptionDialogResult.Ok;
 			}
-
-			return await tcs.Task;
 		}
+
+
 	}
 }

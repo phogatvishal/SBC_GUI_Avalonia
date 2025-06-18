@@ -1,28 +1,51 @@
+
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using SBC.WPF.Models;
+using System;
+using System.Threading.Tasks;
 
-namespace SBC.WPF;
-
-public partial class ExceptionDialog : Window
+namespace SBC.WPF
 {
-	public string TitleText { get; set; }
-	public string Message { get; set; }
-
-	public ExceptionDialog(string title, string message)
+	public partial class ExceptionDialog : Window
 	{
-		InitializeComponent();
-		TitleText = title;
-		Message = message;
-		DataContext = this;
-	}
+		private TaskCompletionSource<ExceptionDialogResult>? _tcs;
 
-	private void OnOkClick(object? sender, RoutedEventArgs e)
-	{
-		this.Close();
-	}
+		public ExceptionDialog(string title, string message, string? details = null, bool canRetry = false)
+		{
+			InitializeComponent();
 
-	private void CloseButton_Click(object? sender, RoutedEventArgs e)
-	{
-		Close();
+			TitleText.Text = title;
+			MessageText.Text = message;
+
+			if (!string.IsNullOrWhiteSpace(details))
+			{
+				DetailsBlock.Text = details;
+				DetailsButton.IsVisible = true;
+			}
+
+			RetryButton.IsVisible = canRetry;
+			DetailsBlock.IsVisible = false;
+
+			SystemDecorations = SystemDecorations.None;
+		}
+
+		public Task<ExceptionDialogResult> ShowDialogAsync(Window parent)
+		{
+			_tcs = new TaskCompletionSource<ExceptionDialogResult>();
+			ShowDialog(parent);
+			return _tcs.Task;
+		}
+
+		private void RetryButton_Click(object? sender, RoutedEventArgs e) => CloseWithResult(ExceptionDialogResult.Retry);
+		private void OkButton_Click(object? sender, RoutedEventArgs e) => CloseWithResult(ExceptionDialogResult.Ok);
+		private void DetailsButton_Click(object? sender, RoutedEventArgs e) => DetailsBlock.IsVisible = !DetailsBlock.IsVisible;
+		private void CloseButton_Click(object? sender, RoutedEventArgs e) => CloseWithResult(ExceptionDialogResult.Ok);
+
+		private void CloseWithResult(ExceptionDialogResult result)
+		{
+			_tcs?.TrySetResult(result);
+			Close();
+		}
 	}
 }
