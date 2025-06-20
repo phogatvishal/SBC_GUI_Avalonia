@@ -257,6 +257,9 @@ namespace SBC.WPF.Views
 
 		private async void Exit_Click(object? sender, RoutedEventArgs e)
 		{
+			//to change hamburger button icon
+			_mainWindowViewModel.OpenHamburgerCommand.Execute(null); 
+
 			if (_confirmedExit) return;
 
 			//Optional: skip dialog if stored setting says so
@@ -270,7 +273,6 @@ namespace SBC.WPF.Views
 
 			if (result)
 			{
-				_mainWindowViewModel.OpenHamburgerCommand.Execute(null);
 				_confirmedExit = true;
 				this.Close();
 			}
