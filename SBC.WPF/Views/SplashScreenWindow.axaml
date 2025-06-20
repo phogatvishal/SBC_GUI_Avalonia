@@ -28,10 +28,12 @@
 
         <ProgressBar
             Width="330"
-            Height="5"
-			Background="DarkOrange"
+            Height="7"
             Margin="80,300,100,0"
             HorizontalAlignment="Right"
+            Background="BlanchedAlmond"
+            CornerRadius="5"
+            Foreground="DarkOrange"
             IsIndeterminate="True" />
 
         <TextBlock

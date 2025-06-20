@@ -6,6 +6,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,11 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\appicon.ico" />
     <None Remove="Assets\SBCSplashScreen3.1.jpg" />
     <None Remove="Resources\Data\Tests.json" />
     <None Remove="Resources\Docs\SBC.chm" />
     <None Remove="Resources\Docs\SBC.pdf" />
-    <None Remove="Resources\Icons\appicon.ico" />
     <None Remove="Resources\Icons\Close Vector.svg" />
     <None Remove="Resources\Icons\ErrorIcon.png" />
     <None Remove="Resources\Icons\EtherNet Vector - Connected.svg" />
@@ -62,13 +63,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\appicon.ico" />
     <Content Include="Resources\Data\Tests.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Docs\SBC.chm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <AvaloniaResource Include="Resources\Icons\appicon.ico" />
     <AvaloniaResource Include="Resources\Icons\ErrorIcon.png" />
     <AvaloniaResource Include="Resources\Icons\questionMark.png" />
     <Content Include="Resources\Docs\SBC.pdf">

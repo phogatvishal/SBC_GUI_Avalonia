@@ -374,12 +374,12 @@
                     HorizontalAlignment="Right"
                     Background="Transparent"
                     Orientation="Horizontal"
-                    Spacing="5">
+                    Spacing="0">
 
                     <!--  Serial Button  -->
                     <Button
-                        Width="35"
-                        Height="35"
+                        Width="25"
+                        Height="25"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         VerticalContentAlignment="Center">
@@ -389,7 +389,7 @@
                                     <Image
                                         Width="14"
                                         Height="14"
-                                        Source="{StaticResource icons_VGA_VectorDrawingImage}" />
+                                        Source="{Binding SerialIcon}" />
                                 </Grid>
                             </ControlTemplate>
                         </Button.Template>
@@ -402,8 +402,9 @@
 
                     <!--  Ethernet Button  -->
                     <Button
-                        Width="35"
-                        Height="35"
+                        Width="25"
+                        Height="25"
+                        Margin="5,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         VerticalContentAlignment="Center">
@@ -413,7 +414,7 @@
                                     <Image
                                         Width="14"
                                         Height="14"
-                                        Source="{StaticResource icons_EtherNet_VectorDrawingImage}" />
+                                        Source="{Binding EthernetIcon}" />
                                 </Grid>
                             </ControlTemplate>
                         </Button.Template>
@@ -429,11 +430,12 @@
                 <!--  Hamburger Menu Button  -->
                 <Button
                     Grid.Column="3"
-                    Width="35"
-                    Height="35"
-                    Margin="0,0,10,0"
-                    Padding="5"
+                    Width="25"
+                    Height="25"
+                    Margin="5,0,5,0"
+                    Padding="2"
                     VerticalAlignment="Center"
+                    Click="HamburgerButton_Click"
                     Cursor="Hand">
                     <Button.Content>
                         <Image x:Name="HamburgerIcon">
@@ -455,14 +457,20 @@
                                     BorderThickness="0"
                                     CornerRadius="2">
                                     <StackPanel>
-                                        <MenuItem Header="About" IsEnabled="False" />
+                                        <MenuItem
+                                            Classes="disabled"
+                                            Header="About"
+                                            IsEnabled="False" />
                                         <MenuItem Command="{Binding APIHelpCommand}" Header="API Help" />
                                         <MenuItem
                                             Classes="disabled"
                                             Header="User Manual"
                                             IsEnabled="False" />
                                         <MenuItem Command="{Binding OpenExportApiLogsCommand}" Header="API Logs" />
-                                        <MenuItem Header="Generate Report" IsEnabled="False" />
+                                        <MenuItem
+                                            Classes="disabled"
+                                            Header="Generate Report"
+                                            IsEnabled="False" />
                                         <MenuItem Command="{Binding OpenConnectionSettingsCommand}" Header="Connection Settings" />
                                         <MenuItem Click="Exit_Click" Header="Exit" />
                                     </StackPanel>

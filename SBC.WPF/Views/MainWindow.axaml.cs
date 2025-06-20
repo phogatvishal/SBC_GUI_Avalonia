@@ -16,14 +16,13 @@ namespace SBC.WPF.Views
 {
 	public partial class MainWindow : Window
 	{
-		private Avalonia.Controls.WindowState _lastWindowState;
-		private bool _isCustomMaximized = false;
-		private PixelRect _previousBounds; // Use PixelRect instead of WPF's Rect
+		private WindowState _lastWindowState;
 		private readonly ILoggerService _logger;
 		private readonly MainWindowViewModel _mainWindowViewModel;
-		private const int ResizeBorderThickness = 6;
 		private WindowEdge? _resizeEdge;
 		private readonly IServiceProvider _serviceProvider;
+		private bool _isHamburgerSelected = false;
+		private bool _confirmedExit = false;
 
 		public MainWindow(MainWindowViewModel mainWindowViewModel, ILoggerService logger, IServiceProvider serviceProvider)
 		{
@@ -41,7 +40,7 @@ namespace SBC.WPF.Views
 					{
 						_lastWindowState = this.WindowState;
 
-						if (this.WindowState == Avalonia.Controls.WindowState.Maximized)
+						if (this.WindowState == WindowState.Maximized)
 							UpdateMaximizeIcon("icons_Restore_DownDrawingImage");
 						else
 							UpdateMaximizeIcon("icons_MaximiseDrawingImage");
@@ -65,16 +64,19 @@ namespace SBC.WPF.Views
 
 			_lastWindowState = this.WindowState;
 
+			this.PointerPressed += (_, __) => {
+				if (_isHamburgerSelected)
+					ResetHamburgerIcon();
+			};
+
 			// Disable native OS borders and title bar
 			SystemDecorations = SystemDecorations.None;
 			_serviceProvider = serviceProvider;
-
-			//Closing += OnClosing;
 		}
 
 		private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
 		{
-			WindowState = WindowState == Avalonia.Controls.WindowState.Maximized ? Avalonia.Controls.WindowState.Normal : Avalonia.Controls.WindowState.Maximized;
+			WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 		}
 
 		private void UpdateMaximizeIcon(string resourceKey)
@@ -98,7 +100,7 @@ namespace SBC.WPF.Views
 		{
 			if (this is Window window)
 			{
-				window.WindowState = Avalonia.Controls.WindowState.Minimized;
+				window.WindowState = WindowState.Minimized;
 			}
 		}
 
@@ -117,7 +119,7 @@ namespace SBC.WPF.Views
 
 			if (e.ClickCount == 2)
 			{
-				WindowState = WindowState == Avalonia.Controls.WindowState.Maximized ? Avalonia.Controls.WindowState.Normal : Avalonia.Controls.WindowState.Maximized;
+				WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 				return;
 			}
 
@@ -166,7 +168,7 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private void Window_PointerMoved(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+		private void Window_PointerMoved(object? sender, PointerPressedEventArgs e)
 		{
 			if (_resizeEdge.HasValue)
 			{
@@ -228,13 +230,8 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private void HamburgerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-		{
-		}
 
-		private bool _confirmedExit = false;
-
-		private async void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
+		private async void Window_Closing(object? sender, WindowClosingEventArgs e)
 		{
 			if (_confirmedExit) return;
 
@@ -256,14 +253,13 @@ namespace SBC.WPF.Views
 			}
 		}
 
-		private async void Exit_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+		private async void Exit_Click(object? sender, RoutedEventArgs e)
 		{
 			if (_confirmedExit) return;
 
 			//Optional: skip dialog if stored setting says so
 			if (AppSettings.DontAskExitConfirm)
 				return;
-
 
 			var dialog = _serviceProvider.GetRequiredService<ConfirmDialog>();
 			var vm = _serviceProvider.GetRequiredService<ConfirmDialogViewModel>();
@@ -275,6 +271,30 @@ namespace SBC.WPF.Views
 				_confirmedExit = true;
 				Close();
 			}
+		}
+
+		private void HamburgerButton_Click(object? sender, RoutedEventArgs e)
+		{
+			if (_isHamburgerSelected)
+			{
+				if (this.FindResource("icons_Sub_MenuDrawingImage") is DrawingImage defaultIcon)
+					HamburgerIcon.Source = defaultIcon;
+			}
+			else
+			{
+				if (this.FindResource("icons_Sub_Menu___SelectedDrawingImage") is DrawingImage selectedIcon)
+					HamburgerIcon.Source = selectedIcon;
+			}
+
+			_isHamburgerSelected = !_isHamburgerSelected;
+		}
+
+		public void ResetHamburgerIcon()
+		{
+			if (this.FindResource("icons_Sub_MenuDrawingImage") is DrawingImage defaultIcon)
+				HamburgerIcon.Source = defaultIcon;
+
+			_isHamburgerSelected = false;
 		}
 	}
 }

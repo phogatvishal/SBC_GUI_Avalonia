@@ -2,6 +2,7 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
+            <CheckBox Content="test checkbox" />
         </Border>
     </Design.PreviewWith>
 
@@ -42,6 +43,7 @@
                             VerticalAlignment="Center"
                             HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                             Content="{TemplateBinding Content}"
+                            FontSize="12"
                             FontWeight="{TemplateBinding FontWeight}"
                             Foreground="{TemplateBinding Foreground}" />
                     </Grid>

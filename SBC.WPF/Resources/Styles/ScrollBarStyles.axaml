@@ -2,6 +2,7 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
+            <ScrollBar Width="20" Height="100" />
         </Border>
     </Design.PreviewWith>
 

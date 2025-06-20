@@ -55,6 +55,12 @@ namespace SBC.WPF.ViewModels
 		private bool _isEthernetConnected;
 
 		[ObservableProperty]
+		private DrawingImage? ethernetIcon;
+
+		[ObservableProperty]
+		private DrawingImage? serialIcon;
+
+		[ObservableProperty]
 		private string _logDocument = string.Empty;
 
 		[ObservableProperty]
@@ -405,6 +411,11 @@ namespace SBC.WPF.ViewModels
 				if (mainWindow is null)
 					return;
 
+				if (mainWindow is Views.MainWindow mw)
+				{
+					mw.ResetHamburgerIcon();
+				}
+
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
 				var connectionSettingsView = _serviceProvider.GetRequiredService<ConnectionSettingsView>();
@@ -443,10 +454,15 @@ namespace SBC.WPF.ViewModels
 
 				var mainWindow = desktop.MainWindow;
 
+				if (mainWindow is Views.MainWindow mw)
+				{
+					mw.ResetHamburgerIcon();
+				}
+
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
-				var connectionSettingsView = _serviceProvider.GetRequiredService<APILogView>();
-				await connectionSettingsView.ShowDialog(mainWindow);
+				var apiExportView = _serviceProvider.GetRequiredService<APILogView>();
+				await apiExportView.ShowDialog(mainWindow);
 
 				mainWindow.Effect = null;
 			}
@@ -454,6 +470,26 @@ namespace SBC.WPF.ViewModels
 			{
 				await _exceptionHandler.ShowExceptionDialogAsync(
 					"Error", "An unexpected error occurred while trying to open API-Logs page.", ex.ToString(), canRetry: false);
+			}
+		}
+
+		partial void OnIsEthernetConnectedChanged(bool value)
+		{
+			if(Application.Current?.TryFindResource(value
+				? "icons_EtherNet_Vector___ConnectedDrawingImage"
+				: "icons_EtherNet_VectorDrawingImage", out var image) == true && image is DrawingImage drawing)
+			{
+				EthernetIcon = drawing; 
+			}
+		}
+
+		partial void OnIsSerialConnectedChanged(bool value)
+		{
+			if(Application.Current?.TryFindResource(value
+				? "icons_VGA_Vector___ConnectedDrawingImage"
+				: "icons_VGA_VectorDrawingImage", out var image) == true && image is DrawingImage drawing)
+			{
+				SerialIcon = drawing;
 			}
 		}
 	}

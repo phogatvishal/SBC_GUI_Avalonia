@@ -2,11 +2,13 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
+            <Button Content="Test" />
+
         </Border>
     </Design.PreviewWith>
 
     <!--  Add Styles Here  -->
-	
+
     <!--  MenuItem  -->
     <!--  Default MenuItem style  -->
     <Style Selector="MenuItem">
@@ -30,8 +32,8 @@
     </Style>
 
     <!--  Custom class for disabled appearance  -->
-    <Style Selector="MenuItem.disabled">
-        <Setter Property="Foreground" Value="#888888" />
+    <Style Selector="MenuItem.disabled /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="Gray" />
     </Style>
 
     <!--  Button Fly-out  -->
