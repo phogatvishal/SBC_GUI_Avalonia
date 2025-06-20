@@ -21,7 +21,6 @@ namespace SBC.WPF.Views
 		private readonly MainWindowViewModel _mainWindowViewModel;
 		private WindowEdge? _resizeEdge;
 		private readonly IServiceProvider _serviceProvider;
-		private bool _isHamburgerSelected = false;
 		private bool _confirmedExit = false;
 
 		public MainWindow(MainWindowViewModel mainWindowViewModel, ILoggerService logger, IServiceProvider serviceProvider)
@@ -32,6 +31,35 @@ namespace SBC.WPF.Views
 
 			_lastWindowState = this.WindowState;
 
+			MaximizeIconChange();
+
+			_logger = logger;
+
+			_logger.OnNewLogLine += (line) =>
+			{
+				LogScrollViewer?.ScrollToEnd();
+			};
+			GetWindowSize();
+
+			_lastWindowState = this.WindowState;
+
+			// Disable native OS borders and title bar
+			SystemDecorations = SystemDecorations.None;
+			_serviceProvider = serviceProvider;
+		}
+
+		private void GetWindowSize()
+		{
+			var screen = Screens.ScreenFromWindow(this) ?? Screens.Primary;
+			Width = screen.WorkingArea.Width * 0.8;
+			Height = screen.WorkingArea.Height * 0.8;
+			Position = new PixelPoint(
+			screen.WorkingArea.X + (int)((screen.WorkingArea.Width - Width) / 2),
+			screen.WorkingArea.Y + (int)((screen.WorkingArea.Height - Height) / 2));
+		}
+
+		private void MaximizeIconChange()
+		{
 			this.PropertyChanged += (_, e) =>
 			{
 				if (e.Property == Window.WindowStateProperty)
@@ -47,31 +75,6 @@ namespace SBC.WPF.Views
 					}
 				}
 			};
-			_logger = logger;
-
-			_logger.OnNewLogLine += (line) =>
-			{
-				LogScrollViewer?.ScrollToEnd();
-			};
-
-			var screen = Screens.ScreenFromWindow(this) ?? Screens.Primary;
-			Width = screen.WorkingArea.Width * 0.8;
-			Height = screen.WorkingArea.Height * 0.8;
-
-			Position = new PixelPoint(
-			screen.WorkingArea.X + (int)((screen.WorkingArea.Width - Width) / 2),
-			screen.WorkingArea.Y + (int)((screen.WorkingArea.Height - Height) / 2));
-
-			_lastWindowState = this.WindowState;
-
-			this.PointerPressed += (_, __) => {
-				if (_isHamburgerSelected)
-					ResetHamburgerIcon();
-			};
-
-			// Disable native OS borders and title bar
-			SystemDecorations = SystemDecorations.None;
-			_serviceProvider = serviceProvider;
 		}
 
 		private void MaximizeButton_Click(object? sender, RoutedEventArgs e)
@@ -230,7 +233,6 @@ namespace SBC.WPF.Views
 			}
 		}
 
-
 		private async void Window_Closing(object? sender, WindowClosingEventArgs e)
 		{
 			if (_confirmedExit) return;
@@ -268,33 +270,10 @@ namespace SBC.WPF.Views
 
 			if (result)
 			{
+				_mainWindowViewModel.OpenHamburgerCommand.Execute(null);
 				_confirmedExit = true;
-				Close();
+				this.Close();
 			}
-		}
-
-		private void HamburgerButton_Click(object? sender, RoutedEventArgs e)
-		{
-			if (_isHamburgerSelected)
-			{
-				if (this.FindResource("icons_Sub_MenuDrawingImage") is DrawingImage defaultIcon)
-					HamburgerIcon.Source = defaultIcon;
-			}
-			else
-			{
-				if (this.FindResource("icons_Sub_Menu___SelectedDrawingImage") is DrawingImage selectedIcon)
-					HamburgerIcon.Source = selectedIcon;
-			}
-
-			_isHamburgerSelected = !_isHamburgerSelected;
-		}
-
-		public void ResetHamburgerIcon()
-		{
-			if (this.FindResource("icons_Sub_MenuDrawingImage") is DrawingImage defaultIcon)
-				HamburgerIcon.Source = defaultIcon;
-
-			_isHamburgerSelected = false;
 		}
 	}
 }

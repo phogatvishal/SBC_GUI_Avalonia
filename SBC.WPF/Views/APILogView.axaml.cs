@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SBC.WPF.ViewModels;
 using System;
@@ -14,6 +15,10 @@ public partial class APILogView : Window
         InitializeComponent();
 		_apiLogViewModel = apiLogViewModel;
 		DataContext = _apiLogViewModel;
+
+		#if DEBUG
+	    this.AttachDevTools();
+		#endif
 
 		// Disable native OS borders and title bar
 		SystemDecorations = SystemDecorations.None;

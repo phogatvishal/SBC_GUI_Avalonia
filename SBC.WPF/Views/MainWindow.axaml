@@ -342,7 +342,7 @@
                         Content="Export" />
 
                     <Button
-                        Margin="10,10,20,10"
+                        Margin="10,10,10,10"
                         Classes="run-style"
                         Command="{Binding ClearLogsCommand}"
                         Content="Clear" />
@@ -363,7 +363,7 @@
 
                 <!--  Serial Number Label  -->
                 <TextBlock
-                    Margin="10,0,0,0"
+                    Margin="10,0,0,5"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Foreground="White"
@@ -378,8 +378,7 @@
 
                     <!--  Serial Button  -->
                     <Button
-                        Width="25"
-                        Height="25"
+                        Width="35"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         VerticalContentAlignment="Center">
@@ -395,16 +394,15 @@
                         </Button.Template>
                         <Button.Styles>
                             <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
-                                <Setter Property="Background" Value="{StaticResource ThemeBrush}" />
+                                <Setter Property="Background" Value="Transparent" />
                             </Style>
                         </Button.Styles>
                     </Button>
 
                     <!--  Ethernet Button  -->
                     <Button
-                        Width="25"
-                        Height="25"
-                        Margin="5,0,0,0"
+                        Width="35"
+                        Margin="0,0,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         VerticalContentAlignment="Center">
@@ -420,7 +418,7 @@
                         </Button.Template>
                         <Button.Styles>
                             <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
-                                <Setter Property="Background" Value="{StaticResource ThemeBrush}" />
+                                <Setter Property="Background" Value="Transparent" />
                             </Style>
                         </Button.Styles>
                     </Button>
@@ -429,24 +427,29 @@
 
                 <!--  Hamburger Menu Button  -->
                 <Button
+					Width="34"
                     Grid.Column="3"
-                    Width="25"
-                    Height="25"
-                    Margin="5,0,5,0"
-                    Padding="2"
+                    Margin="0,0"
                     VerticalAlignment="Center"
-                    Click="HamburgerButton_Click"
+                    Command="{Binding OpenHamburgerCommand}"
                     Cursor="Hand">
-                    <Button.Content>
-                        <Image x:Name="HamburgerIcon">
-                            <Image.Styles>
-                                <Style Selector="Image">
-                                    <Setter Property="Source" Value="{StaticResource icons_Sub_MenuDrawingImage}" />
 
-                                </Style>
-                            </Image.Styles>
-                        </Image>
-                    </Button.Content>
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid x:Name="RootGrid" Background="Transparent">
+                                <Image
+                                    Width="14"
+                                    Height="14"
+                                    Source="{Binding HamburgerIcon}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+
+                    <Button.Styles>
+                        <Style x:SetterTargetType="Grid" Selector="Button:pointerover /template/ #RootGrid">
+                            <Setter Property="Background" Value="Transparent" />
+                        </Style>
+                    </Button.Styles>
 
                     <Button.Flyout>
                         <Flyout Placement="TopEdgeAlignedRight">

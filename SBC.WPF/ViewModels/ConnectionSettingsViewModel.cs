@@ -13,6 +13,8 @@ using System;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Controls;
 
 namespace SBC.WPF.ViewModels
 {
@@ -21,6 +23,7 @@ namespace SBC.WPF.ViewModels
 		private readonly MainWindowViewModel _mainWindowViewModel;
 		private readonly ISBCInteropService _interopService;
 		private readonly IExceptionHandlerService _exceptionHandler;
+		private readonly IServiceProvider _serviceProvider;
 		public ObservableCollection<string> AvailableComPorts { get; }
 		public ObservableCollection<int> AvailableBaudRates { get; }
 		public ObservableCollection<string> Protocols { get; }
@@ -55,20 +58,31 @@ namespace SBC.WPF.ViewModels
 		public bool HasIPPart3Error => !string.IsNullOrWhiteSpace(IPPart3Error);
 		public bool HasIPPart4Error => !string.IsNullOrWhiteSpace(IPPart4Error);
 
-		public ConnectionSettingsViewModel(MainWindowViewModel mainWindowViewModel, ISBCInteropService interopService, IExceptionHandlerService exceptionHandler)
+		public ConnectionSettingsViewModel(MainWindowViewModel mainWindowViewModel, ISBCInteropService interopService,
+			IExceptionHandlerService exceptionHandler, IServiceProvider serviceProvider)
 		{
 			_mainWindowViewModel = mainWindowViewModel;
 			_interopService = interopService;
 			_exceptionHandler = exceptionHandler;
+			_serviceProvider = serviceProvider;
 
 			AvailableComPorts = new ObservableCollection<string>(SerialPort.GetPortNames().OrderBy(name => name));
 			AvailableBaudRates = new ObservableCollection<int> { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 460800, 921600, 230400 };
 			Protocols = new ObservableCollection<string> { "TCP", "UDP" };
 
 			var settings = SettingsService.LoadSettings();
-			SelectedComPort = AvailableComPorts.Contains(settings.SelectedComPort) ? settings.SelectedComPort : null;
-			SelectedBaudRate = AvailableBaudRates.Contains(settings.SelectedBaudRate) ? settings.SelectedBaudRate : 9600;
-			SelectedProtocol = Protocols.Contains(settings.SelectedProtocol) ? settings.SelectedProtocol : null;
+
+			SelectedComPort = AvailableComPorts.Contains(settings.SelectedComPort)
+				? settings.SelectedComPort
+				: AvailableComPorts.FirstOrDefault();
+
+			SelectedBaudRate = AvailableBaudRates.Contains(settings.SelectedBaudRate)
+				? settings.SelectedBaudRate
+				: 9600;
+
+			SelectedProtocol = Protocols.Contains(settings.SelectedProtocol)
+				? settings.SelectedProtocol
+				: Protocols.FirstOrDefault(); // <-- fallback to "TCP"
 
 			if (!string.IsNullOrEmpty(settings.SelectedIP))
 			{
@@ -97,6 +111,9 @@ namespace SBC.WPF.ViewModels
 				SelectedPort = port;
 			else
 				SelectedPort = null;
+
+			ApplySettingsCommand.NotifyCanExecuteChanged();
+			TestConnectionCommand.NotifyCanExecuteChanged();
 		}
 
 		partial void OnIPPart1Changed(string? value) => NotifyIPValidation(nameof(IPPart1));
@@ -132,13 +149,14 @@ namespace SBC.WPF.ViewModels
 		private string ValidateIpSegment(string? part) =>
 			!int.TryParse(part, out int num) || num < 0 || num > 255 ? "0–255 only" : string.Empty;
 
-		[RelayCommand]
+		[RelayCommand(CanExecute = nameof(CanApplySettings))]
 		private async Task ApplySettings()
 		{
 			try
 			{
-				if (int.TryParse(SelectedPortText, out var parsedPort))
-					SelectedPort = parsedPort;
+				// Check all inputs are valid before proceeding
+				if (!IsFormValid())
+					return;
 
 				_mainWindowViewModel.IsSerialConnected = TestSerialConnection(SelectedComPort, SelectedBaudRate);
 				_mainWindowViewModel.IsEthernetConnected = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
@@ -148,7 +166,7 @@ namespace SBC.WPF.ViewModels
 					SelectedComPort = SelectedComPort,
 					SelectedBaudRate = SelectedBaudRate,
 					SelectedIP = SelectedIP,
-					SelectedPort = SelectedPort,
+					SelectedPort = SelectedPort ?? 0,
 					SelectedProtocol = SelectedProtocol
 				};
 
@@ -159,6 +177,8 @@ namespace SBC.WPF.ViewModels
 
 				if (_mainWindowViewModel.IsEthernetConnected)
 					_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
+
+				await ShowConfirmDialog("Settings Applied", "Your settings were successfully applied.");
 			}
 			catch (Exception ex)
 			{
@@ -183,10 +203,6 @@ namespace SBC.WPF.ViewModels
 
 				SerialStatusColor = serial ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
 				EthernetStatusColor = ethernet ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
-
-				// Update main window view model
-				_mainWindowViewModel.IsSerialConnected = serial;
-				_mainWindowViewModel.IsEthernetConnected = ethernet;
 			}
 			catch (Exception ex)
 			{
@@ -210,6 +226,45 @@ namespace SBC.WPF.ViewModels
 
 			if (AvailableComPorts.Any())
 				SelectedComPort = AvailableComPorts.First();
+		}
+
+		private bool IsFormValid()
+		{
+			// Check each field's error string
+			if (!string.IsNullOrWhiteSpace(this[nameof(SelectedPortText)])) return false;
+			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart1)])) return false;
+			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart2)])) return false;
+			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart3)])) return false;
+			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart4)])) return false;
+			//if (string.IsNullOrWhiteSpace(SelectedComPort)) return false;
+			if (string.IsNullOrWhiteSpace(SelectedProtocol)) return false;
+
+			return true;
+		}
+
+		private bool CanApplySettings() => IsFormValid();
+
+		private async Task ShowConfirmDialog(string title, string message)
+		{
+			var dialog = _serviceProvider.GetRequiredService<ConfirmDialog>();
+			var vm = _serviceProvider.GetRequiredService<ConfirmDialogViewModel>();
+
+			vm.Title = title;
+			vm.Message = message;
+			vm.ShowYesNo = false;
+			vm.ShowOk = true;
+
+			dialog.DataContext = vm;
+
+			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+				desktop.MainWindow is Window owner)
+			{
+				owner.IsEnabled = false;
+
+				await dialog.ShowDialog(owner);
+
+				owner.IsEnabled = true;
+			}
 		}
 	}
 }

@@ -13,7 +13,13 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private bool _dontAskAgain;
 
-        public ConfirmDialogViewModel()
+		[ObservableProperty]
+		private bool showYesNo = true;   // <-- Default for app exit
+
+		[ObservableProperty]
+		private bool showOk = false;     // <-- Set true when showing "Settings Applied"
+
+		public ConfirmDialogViewModel()
         {
         }
     }

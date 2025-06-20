@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using SBC.WPF.ViewModels;
 
@@ -9,6 +10,10 @@ public partial class ConnectionSettingsView : Window
     {
         InitializeComponent();
         DataContext = connectionSettingsViewModel;
+
+		#if DEBUG
+		this.AttachDevTools();
+		#endif
 
 		// Disable native OS borders and title bar
 		SystemDecorations = SystemDecorations.None;

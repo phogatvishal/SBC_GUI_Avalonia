@@ -6,7 +6,7 @@
     <Color x:Key="ButtonBackgroundColor">#3D79D1</Color>
     <Color x:Key="ButtonForegroundColor">White</Color>
     <Color x:Key="ScrollBackgroundColor">#D9D9D9</Color>
-    <Color x:Key="ButtonHoverColor">#3d3dd1</Color>
+    <Color x:Key="ButtonHoverColor">#1553ad</Color>
     <Color x:Key="ButtonPointerOverColor">#2e2eb8</Color>
 
     <!--  Brush resources  -->

@@ -16,7 +16,7 @@ public partial class ConfirmDialog : Window
 		DataContext = _confirmDialogViewModel;
 
 		SystemDecorations = SystemDecorations.None;
-    }
+	}
 
 	private void Yes_Click(object? sender, RoutedEventArgs e)
 	{
@@ -31,5 +31,10 @@ public partial class ConfirmDialog : Window
 	private void CloseButton_Click(object? sender, RoutedEventArgs e)
 	{
 		Close();
+	}
+
+	private void Ok_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+	{
+		this.Close(true); // or false — based on what you expect
 	}
 }

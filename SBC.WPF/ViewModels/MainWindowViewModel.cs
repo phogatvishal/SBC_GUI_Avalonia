@@ -17,8 +17,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using SBC.WPF.Enums;
-using SBC.WPF.Services;
-using Avalonia.Controls.Platform;
 
 namespace SBC.WPF.ViewModels
 {
@@ -30,6 +28,7 @@ namespace SBC.WPF.ViewModels
 		private readonly IExceptionHandlerService _exceptionHandler;
 		private readonly ILoggerService _logger;
 		private APILogView apiLogView;
+		private bool _isHamburgerSelected = false;
 
 		[ObservableProperty]
 		private bool _isNavCollapsed;
@@ -66,6 +65,10 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private bool _isAllSelected;
 
+		[ObservableProperty]
+		private DrawingImage? hamburgerIcon;
+
+
 		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider,
 			ILoggerService logger, IExceptionHandlerService exceptionHandler)
         {
@@ -80,6 +83,11 @@ namespace SBC.WPF.ViewModels
 
 			_interopService.Connect(
 			InterfaceConnection.INTERFACE_ETHERNET, "COM3", 115200, "MyProtocol");
+
+			if (Application.Current?.TryFindResource("icons_Sub_MenuDrawingImage", out var image) == true && image is DrawingImage drawing)
+			{
+				HamburgerIcon = drawing;
+			}
 		}
 
 		private async Task Initialize()
@@ -346,6 +354,8 @@ namespace SBC.WPF.ViewModels
 				string chmPath = Path.Combine(basePath, "SBC.chm");
 				string pdfPath = Path.Combine(basePath, "SBC.pdf");
 
+				OpenHamburger();
+
 				// Windows: Try to open .chm if it exists
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 				{
@@ -410,15 +420,17 @@ namespace SBC.WPF.ViewModels
 				var mainWindow = desktop.MainWindow;
 				if (mainWindow is null)
 					return;
-
-				if (mainWindow is Views.MainWindow mw)
-				{
-					mw.ResetHamburgerIcon();
-				}
+				OpenHamburger();
 
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
-				var connectionSettingsView = _serviceProvider.GetRequiredService<ConnectionSettingsView>();
+				var connectionSettingsView = _serviceProvider.GetService<ConnectionSettingsView>();
+				if (connectionSettingsView == null)
+				{
+					await _exceptionHandler.ShowExceptionDialogAsync(
+						"Error", "Could not load Connection Settings view.", canRetry: false);
+					return;
+				}
 
 				if (connectionSettingsView.DataContext is ConnectionSettingsViewModel vm)
 				{
@@ -436,15 +448,6 @@ namespace SBC.WPF.ViewModels
 		}
 
 		[RelayCommand]
-		private void Exit()
-		{
-			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
-			{
-				lifetime.Shutdown();
-			}
-		}
-
-		[RelayCommand]
 		private async Task OpenExportApiLogsAsync()
 		{
 			try
@@ -453,15 +456,12 @@ namespace SBC.WPF.ViewModels
 					return;
 
 				var mainWindow = desktop.MainWindow;
-
-				if (mainWindow is Views.MainWindow mw)
-				{
-					mw.ResetHamburgerIcon();
-				}
+				OpenHamburger();
 
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
 				var apiExportView = _serviceProvider.GetRequiredService<APILogView>();
+
 				await apiExportView.ShowDialog(mainWindow);
 
 				mainWindow.Effect = null;
@@ -491,6 +491,19 @@ namespace SBC.WPF.ViewModels
 			{
 				SerialIcon = drawing;
 			}
+		}
+
+		[RelayCommand]
+		private void OpenHamburger()
+		{
+			if (Application.Current?.TryFindResource(_isHamburgerSelected
+					? "icons_Sub_MenuDrawingImage" 
+					: "icons_Sub_Menu___SelectedDrawingImage", out var image) == true && image is DrawingImage drawing)
+			{
+				HamburgerIcon = drawing;
+			}
+
+			_isHamburgerSelected = !_isHamburgerSelected;
 		}
 	}
 }

@@ -7,8 +7,8 @@
     xmlns:models="using:SBC.WPF.Models"
     xmlns:vm="using:SBC.WPF.ViewModels"
     Title="Connection Settings "
-    Width="650"
-    Height="500"
+    Width="560"
+    Height="470"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="vm:ConnectionSettingsViewModel"
@@ -23,7 +23,7 @@
     <Design.DataContext>
         <vm:ConnectionSettingsViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="35, *, Auto">
+    <Grid RowDefinitions="35, *, 35">
 
         <!--  Header  -->
         <DockPanel Grid.Row="0" Background="{StaticResource HeaderBrush}">
@@ -37,17 +37,22 @@
                 FontSize="16"
                 Foreground="White"
                 Text="Connection Settings" />
+
             <Button
                 Width="35"
                 Height="35"
-                HorizontalAlignment="Right"
+                Margin="240,0,0,0"
                 VerticalAlignment="Center"
                 Background="Transparent"
+                BorderThickness="0"
                 Click="CloseButton_Click"
-                FontWeight="Bold">
+                DockPanel.Dock="Right"
+                FontWeight="Bold"
+                Foreground="{DynamicResource ButtonForegroundColor}">
                 <Button.Template>
-                    <ControlTemplate>
+                    <ControlTemplate TargetType="Button">
                         <Grid x:Name="RootGrid" Background="Transparent">
+                            <!--  Close Icon: Cross  -->
                             <Image
                                 Width="14"
                                 Height="14"
@@ -108,7 +113,7 @@
             <!--  Ethernet Settings  -->
             <StackPanel
                 Grid.Row="2"
-                Margin="0,20,0,10"
+                Margin="0,20,0,5"
                 Orientation="Horizontal">
                 <TextBlock FontWeight="Medium" Text="Ethernet" />
                 <Ellipse
@@ -118,107 +123,108 @@
                     Fill="{Binding EthernetStatusColor}" />
             </StackPanel>
 
-            <StackPanel>
-                <StackPanel
+            <StackPanel
+                MinHeight="50"
+                MaxHeight="50"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="5">
+                <TextBlock
+                    Width="120"
+                    Margin="0,0,0,10"
                     VerticalAlignment="Center"
-                    Orientation="Horizontal"
-                    Spacing="5">
-                    <TextBlock
-                        Width="120"
-                        Margin="0,0,0,10"
-                        VerticalAlignment="Center"
-                        Text="Destination IP" />
+                    Text="Destination IP" />
 
-                    <StackPanel
-                        MinHeight="50"
-                        MaxHeight="50"
-                        Orientation="Horizontal">
-                        <!--  IP Part 1  -->
-                        <StackPanel>
-                            <TextBox
-                                x:Name="Ip1Box"
-                                Width="43"
-                                Margin="0,0,5,0"
-                                Classes="myStyled"
-                                MaxLength="3"
-                                Text="{Binding IPPart1, UpdateSourceTrigger=PropertyChanged}"
-                                Watermark="255" />
+                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                    <!--  IP Part 1  -->
+                    <StackPanel>
+                        <TextBox
+                            x:Name="Ip1Box"
+                            Width="43"
+                            Margin="0,0,5,0"
+                            Classes="myStyled"
+                            MaxLength="3"
+                            Text="{Binding IPPart1, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
 
-                            <TextBlock
-                                Margin="0,2,0,0"
-                                FontSize="12"
-                                Foreground="Red"
-                                IsVisible="{Binding HasIPPart1Error}"
-                                Text="{Binding IPPart1Error}" />
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            FontSize="12"
+                            Foreground="Red"
+                            IsVisible="{Binding HasIPPart1Error}"
+                            Text="{Binding IPPart1Error}" />
 
-                        </StackPanel>
+                    </StackPanel>
 
-                        <!--  IP Part 2  -->
-                        <StackPanel>
-                            <TextBox
-                                Width="43"
-                                Margin="0,0,5,0"
-                                VerticalContentAlignment="Center"
-                                Classes="myStyled"
-                                MaxLength="3"
-                                Text="{Binding IPPart2, UpdateSourceTrigger=PropertyChanged}"
-                                Watermark="255" />
+                    <!--  IP Part 2  -->
+                    <StackPanel>
+                        <TextBox
+                            Width="43"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Classes="myStyled"
+                            MaxLength="3"
+                            Text="{Binding IPPart2, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
 
-                            <TextBlock
-                                Margin="0,2,0,0"
-                                FontSize="12"
-                                Foreground="Red"
-                                IsVisible="{Binding HasIPPart2Error}"
-                                Text="{Binding IPPart2Error}" />
-                        </StackPanel>
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            FontSize="12"
+                            Foreground="Red"
+                            IsVisible="{Binding HasIPPart2Error}"
+                            Text="{Binding IPPart2Error}" />
+                    </StackPanel>
 
-                        <!--  IP Part 3  -->
-                        <StackPanel>
-                            <TextBox
-                                Width="43"
-                                Margin="0,0,5,0"
-                                VerticalContentAlignment="Center"
-                                Classes="myStyled"
-                                MaxLength="3"
-                                Text="{Binding IPPart3, UpdateSourceTrigger=PropertyChanged}"
-                                Watermark="255" />
+                    <!--  IP Part 3  -->
+                    <StackPanel>
+                        <TextBox
+                            Width="43"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Classes="myStyled"
+                            MaxLength="3"
+                            Text="{Binding IPPart3, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
 
-                            <TextBlock
-                                Margin="0,2,0,0"
-                                FontSize="12"
-                                Foreground="Red"
-                                IsVisible="{Binding HasIPPart3Error}"
-                                Text="{Binding IPPart3Error}" />
-                        </StackPanel>
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            FontSize="12"
+                            Foreground="Red"
+                            IsVisible="{Binding HasIPPart3Error}"
+                            Text="{Binding IPPart3Error}" />
+                    </StackPanel>
 
-                        <!--  IP Part 4  -->
-                        <StackPanel>
-                            <TextBox
-                                Width="43"
-                                Margin="0,0,5,0"
-                                VerticalContentAlignment="Center"
-                                Classes="myStyled"
-                                MaxLength="3"
-                                Text="{Binding IPPart4, UpdateSourceTrigger=PropertyChanged}"
-                                Watermark="255" />
+                    <!--  IP Part 4  -->
+                    <StackPanel>
+                        <TextBox
+                            Width="43"
+                            Margin="0,0,5,0"
+                            VerticalContentAlignment="Center"
+                            Classes="myStyled"
+                            MaxLength="3"
+                            Text="{Binding IPPart4, UpdateSourceTrigger=PropertyChanged}"
+                            Watermark="255" />
 
-                            <TextBlock
-                                Margin="0,2,0,0"
-                                FontSize="12"
-                                Foreground="Red"
-                                IsVisible="{Binding HasIPPart4Error}"
-                                Text="{Binding IPPart4Error}" />
-                        </StackPanel>
+                        <TextBlock
+                            Margin="0,2,0,0"
+                            FontSize="12"
+                            Foreground="Red"
+                            IsVisible="{Binding HasIPPart4Error}"
+                            Text="{Binding IPPart4Error}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
 
-            <StackPanel Margin="0,5,0,10" Orientation="Horizontal">
+            <StackPanel
+                MinHeight="50"
+                MaxHeight="50"
+                Margin="0,5,0,5"
+                Orientation="Horizontal">
                 <TextBlock
                     Width="120"
                     VerticalAlignment="Center"
                     Text="Port" />
-                <StackPanel>
+                <StackPanel VerticalAlignment="Center">
                     <TextBox
                         Name="PortTextBox"
                         Width="270"
@@ -226,7 +232,7 @@
                         Classes="myStyled"
                         MaxLength="5"
                         Text="{Binding SelectedPortText, Mode=TwoWay}"
-                        Watermark="1024" />
+                        Watermark="Enter port nunmber" />
 
                     <TextBlock
                         Margin="5,2,0,0"
@@ -234,12 +240,11 @@
                         Foreground="Red"
                         IsVisible="{Binding IsPortTextNotEmpty}"
                         Text="{Binding PortError}" />
-
                 </StackPanel>
 
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                 <TextBlock
                     Width="120"
                     VerticalAlignment="Center"
@@ -256,8 +261,8 @@
 
         <StackPanel
             Grid.Row="2"
-            Margin="185,30,60,80"
-            HorizontalAlignment="Left"
+            Margin="210,50,195,80"
+            HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Orientation="Horizontal">
             <Button

@@ -44,8 +44,8 @@
 
             <!--  Close Button  -->
             <Button
-                Width="20"
-                Height="20"
+                Width="35"
+                Height="35"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Background="Transparent"
