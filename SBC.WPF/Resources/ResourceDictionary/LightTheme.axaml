@@ -14,6 +14,7 @@
     <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{StaticResource ButtonBackgroundColor}" />
     <SolidColorBrush x:Key="ButtonForegroundBrush" Color="{StaticResource ButtonForegroundColor}" />
     <SolidColorBrush x:Key="ThemeBrush" Color="{StaticResource ThemeColor}" />
+    <SolidColorBrush x:Key="ScrollBackgroundBrush" Color="{StaticResource ScrollBackgroundColor}" />
     <SolidColorBrush x:Key="ButtonHoverBrush" Color="{StaticResource ButtonHoverColor}" />
     <SolidColorBrush x:Key="ButtonPointerOverBrush" Color="{StaticResource ButtonPointerOverColor}" />
 

@@ -9,7 +9,6 @@
         <FluentTheme />
 		
         <StyleInclude Source="Resources/Styles/ButtonStyles.axaml" />
-        <StyleInclude Source="Resources/Styles/ScrollBarStyles.axaml" />
         <StyleInclude Source="Resources/Styles/CheckBoxStyles.axaml" />
         <StyleInclude Source="avares://SBC.WPF/Resources/Styles/ComboBoxStyles.axaml" />
 		<StyleInclude Source="avares://SBC.WPF/Resources/Styles/TextBoxStyles.axaml" />
