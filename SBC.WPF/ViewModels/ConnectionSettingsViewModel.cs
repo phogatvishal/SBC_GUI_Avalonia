@@ -123,6 +123,8 @@ namespace SBC.WPF.ViewModels
 
 		private void NotifyIPValidation(string propertyName)
 		{
+			ApplySettingsCommand.NotifyCanExecuteChanged();
+
 			OnPropertyChanged(propertyName + "Error");
 			OnPropertyChanged("Has" + propertyName + "Error");
 		}
@@ -236,8 +238,9 @@ namespace SBC.WPF.ViewModels
 			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart2)])) return false;
 			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart3)])) return false;
 			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart4)])) return false;
-			//if (string.IsNullOrWhiteSpace(SelectedComPort)) return false;
 			if (string.IsNullOrWhiteSpace(SelectedProtocol)) return false;
+			//Enable/uncomment this once you're connected with h/w
+			//if (string.IsNullOrWhiteSpace(SelectedComPort)) return false;
 
 			return true;
 		}
