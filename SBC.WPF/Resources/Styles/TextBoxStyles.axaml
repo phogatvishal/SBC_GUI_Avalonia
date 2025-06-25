@@ -2,7 +2,16 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
-            <TextBox Text="Test" />
+            <StackPanel Spacing="20">
+                <TextBox
+                    MinWidth="350"
+                    IsHitTestVisible="True"
+                    Text="Test" />
+                <TextBox
+                    Width="100"
+                    HorizontalAlignment="Left"
+                    Text="Test" />
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 
@@ -23,7 +32,7 @@
 
     <!--  Target the Border inside template to apply visual styles  -->
     <Style x:SetterTargetType="Border" Selector="TextBox.myStyled /template/ Border">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundColor}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ThemeColor}" />
     </Style>
 
@@ -32,34 +41,33 @@
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
-
     <!--  Text-Box style for API View  -->
     <Style Selector="TextBox.api-styled">
-        <Setter Property="Background" Value="White" />
-        <Setter Property="Foreground" Value="Black" />
-        <Setter Property="BorderBrush" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBackgroundColor}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Padding" Value="4" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Width" Value="250" />
-        <Setter Property="CaretBrush" Value="Black" />
+        <Setter Property="CaretBrush" Value="{DynamicResource PrimaryBackgroundColor}" />
     </Style>
 
     <!--  Target the Border inside template to apply visual styles  -->
     <Style x:SetterTargetType="Border" Selector="TextBox.api-styled /template/ Border">
-        <Setter Property="Background" Value="White" />
-        <Setter Property="BorderBrush" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBackgroundColor}" />
     </Style>
 
     <Style Selector="TextBox.api-styled:pointerover">
-        <Setter Property="Background" Value="White" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForegroundColor}" />
     </Style>
 
     <Style Selector="TextBox.api-styled:pointerover /template/ Border">
-        <Setter Property="Background" Value="White" />
-        <Setter Property="BorderBrush" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackgroundColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryBackgroundColor}" />
     </Style>
 
 </Styles>

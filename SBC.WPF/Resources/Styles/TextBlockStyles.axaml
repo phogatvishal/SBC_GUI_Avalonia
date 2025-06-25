@@ -2,6 +2,10 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
+            <TextBlock
+                MinWidth="250"
+                MinHeight="10"
+                Text="test" />
         </Border>
     </Design.PreviewWith>
 
@@ -9,6 +13,6 @@
 
     <!--  Text-Block  -->
     <Style Selector="TextBlock">
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}" />
     </Style>
 </Styles>

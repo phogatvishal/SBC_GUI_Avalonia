@@ -10,7 +10,6 @@
 		
         <StyleInclude Source="Resources/Styles/ButtonStyles.axaml" />
         <StyleInclude Source="Resources/Styles/CheckBoxStyles.axaml" />
-        <StyleInclude Source="avares://SBC.WPF/Resources/Styles/ComboBoxStyles.axaml" />
 		<StyleInclude Source="avares://SBC.WPF/Resources/Styles/TextBoxStyles.axaml" />
 		<StyleInclude Source="avares://SBC.WPF/Resources/Styles/TextBlockStyles.axaml" />
         <StyleInclude Source="avares://SBC.WPF/Resources/Styles/ButtonFlyoutMenuItemsStyles.axaml" />
@@ -22,7 +21,9 @@
                 <ResourceInclude Source="/Resources/ResourceDictionary/Icons.axaml" />
                 <ResourceInclude Source="/Resources/ResourceDictionary/Styles.axaml" />
                 <ResourceInclude Source="/Resources/ResourceDictionary/LightTheme.axaml" />
-                <ResourceInclude Source="/Resources/ResourceDictionary/ScrollBar.axaml" />
+				<ResourceInclude Source="/Resources/ResourceDictionary/ScrollBar.axaml" />
+				<ResourceInclude Source="/Resources/ResourceDictionary/ComboBox.axaml" />
+				<ResourceInclude Source="/Resources/ResourceDictionary/ComboBoxItem.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

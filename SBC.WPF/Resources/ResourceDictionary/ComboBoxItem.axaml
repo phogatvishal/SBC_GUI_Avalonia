@@ -1,0 +1,78 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:ClassModifier="internal">
+
+    <Design.PreviewWith>
+        <Border Margin="20" Padding="20">
+            <StackPanel
+                HorizontalAlignment="Stretch"
+                ScrollViewer.IsDeferredScrollingEnabled="True"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                Spacing="10">
+                <ComboBoxItem>Item1</ComboBoxItem>
+                <ComboBoxItem>Item2</ComboBoxItem>
+                <ComboBoxItem>Item3</ComboBoxItem>
+                <ComboBoxItem IsEnabled="False">Item4</ComboBoxItem>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type ComboBoxItem}" TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="10 0 10 0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter
+                    Name="PART_ContentPresenter"
+                    Margin="5,0,10,0"
+                    Padding="{TemplateBinding Padding}"
+                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Content="{TemplateBinding Content}"
+                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                    CornerRadius="{TemplateBinding CornerRadius}" />
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryForeground}" />
+            <Setter Property="Background" Value="{StaticResource PrimaryBackground}" />
+            <Setter Property="Height" Value="30" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource PrimaryButtonPressedBackground}" />
+        </Style>
+
+        <Style Selector="^:selected">
+            <Setter Property="Background" Value="{StaticResource PrimaryBackground}" />
+            <Setter Property="Foreground" Value="{StaticResource PrimaryForeground}" />
+        </Style>
+
+        <Style Selector="^:selected:focus">
+            <Setter Property="Background" Value="{StaticResource PrimaryFocusHoverBackground}" />
+        </Style>
+
+        <Style Selector="^:selected:pointerover">
+            <Setter Property="Background" Value="{StaticResource PrimaryBackground}" />
+        </Style>
+
+        <Style Selector="^:selected:focus:pointerover">
+            <Setter Property="Background" Value="{StaticResource PrimaryFocusHoverBackground}" />
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Setter Property="Background" Value="{StaticResource PrimaryButtonPressedBackground}" />
+        </Style>
+
+    </ControlTheme>
+</ResourceDictionary>

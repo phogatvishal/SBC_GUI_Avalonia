@@ -8,6 +8,13 @@
     <Color x:Key="ScrollBackgroundColor">#D9D9D9</Color>
     <Color x:Key="ButtonHoverColor">#1553ad</Color>
     <Color x:Key="ButtonPointerOverColor">#2e2eb8</Color>
+    <Color x:Key="PrimaryForegroundColor">#000000</Color>
+    <Color x:Key="PrimaryBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="PrimaryHoverBackgroundColor">#F5F5F5</Color>
+    <Color x:Key="PrimaryFocusHoverBackgroundColor">#D3D3D3</Color>
+    <Color x:Key="PrimaryButtonPressedBackgroundColor">#A9A9A9</Color>
+    <Color x:Key="PrimaryDisabledButtonForegroundColor">#ccc</Color>
+    <Color x:Key="PrimaryDisabledButtonBackgroundColor">#777</Color>
 
     <!--  Brush resources  -->
     <SolidColorBrush x:Key="HeaderBrush" Color="{StaticResource HeaderColor}" />
@@ -17,5 +24,12 @@
     <SolidColorBrush x:Key="ScrollBackgroundBrush" Color="{StaticResource ScrollBackgroundColor}" />
     <SolidColorBrush x:Key="ButtonHoverBrush" Color="{StaticResource ButtonHoverColor}" />
     <SolidColorBrush x:Key="ButtonPointerOverBrush" Color="{StaticResource ButtonPointerOverColor}" />
+    <SolidColorBrush x:Key="PrimaryForeground" Color="{StaticResource PrimaryForegroundColor}" />
+    <SolidColorBrush x:Key="PrimaryBackground" Color="{StaticResource PrimaryBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryHoverBackground" Color="{StaticResource PrimaryHoverBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryFocusHoverBackground" Color="{StaticResource PrimaryFocusHoverBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryButtonPressedBackground" Color="{StaticResource PrimaryButtonPressedBackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryDisabledButtonForeground" Color="{StaticResource PrimaryDisabledButtonForegroundColor}" />
+    <SolidColorBrush x:Key="PrimaryDisabledButtonBackground" Color="{StaticResource PrimaryDisabledButtonBackgroundColor}" />
 
 </ResourceDictionary>

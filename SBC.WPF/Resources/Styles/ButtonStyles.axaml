@@ -2,7 +2,10 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <!--  Add Controls for Previewer Here  -->
-			<Button Content="test btn" />
+            <StackPanel Spacing="20">
+                <Button MinWidth="200" Content="test" />
+                <Button Content="test" />
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
 
@@ -49,8 +52,8 @@
     </Style>
     <!--  Disabled  -->
     <Style Selector="Button.run-style:disabled">
-        <Setter Property="Background" Value="#777" />
-        <Setter Property="Foreground" Value="#ccc" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryDisabledButtonBackgroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryDisabledButtonForegroundColor}" />
     </Style>
 
     <!--  App Button  -->
@@ -94,7 +97,7 @@
     </Style>
     <!--  Disabled  -->
     <Style Selector="Button.dialog-style:disabled">
-        <Setter Property="Background" Value="#777" />
-        <Setter Property="Foreground" Value="#ccc" />
+        <Setter Property="Background" Value="{DynamicResource PrimaryDisabledButtonBackgroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryDisabledButtonForegroundColor}" />
     </Style>
 </Styles>

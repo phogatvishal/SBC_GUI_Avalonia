@@ -151,15 +151,11 @@ namespace SBC.WPF.ViewModels
 		private string ValidateIpSegment(string? part) =>
 			!int.TryParse(part, out int num) || num < 0 || num > 255 ? "0–255 only" : string.Empty;
 
-		[RelayCommand(CanExecute = nameof(CanApplySettings))]
+		[RelayCommand]
 		private async Task ApplySettings()
 		{
 			try
 			{
-				// Check all inputs are valid before proceeding
-				if (!IsFormValid())
-					return;
-
 				_mainWindowViewModel.IsSerialConnected = TestSerialConnection(SelectedComPort, SelectedBaudRate);
 				_mainWindowViewModel.IsEthernetConnected = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
 
@@ -229,23 +225,6 @@ namespace SBC.WPF.ViewModels
 			if (AvailableComPorts.Any())
 				SelectedComPort = AvailableComPorts.First();
 		}
-
-		private bool IsFormValid()
-		{
-			// Check each field's error string
-			if (!string.IsNullOrWhiteSpace(this[nameof(SelectedPortText)])) return false;
-			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart1)])) return false;
-			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart2)])) return false;
-			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart3)])) return false;
-			if (!string.IsNullOrWhiteSpace(this[nameof(IPPart4)])) return false;
-			if (string.IsNullOrWhiteSpace(SelectedProtocol)) return false;
-			//Enable/uncomment this once you're connected with h/w
-			//if (string.IsNullOrWhiteSpace(SelectedComPort)) return false;
-
-			return true;
-		}
-
-		private bool CanApplySettings() => IsFormValid();
 
 		private async Task ShowConfirmDialog(string title, string message)
 		{
