@@ -46,6 +46,9 @@ namespace SBC.WPF.Views
 			// Disable native OS borders and title bar
 			SystemDecorations = SystemDecorations.None;
 			_serviceProvider = serviceProvider;
+
+			AddHandler(PointerPressedEvent, OutsideClickHandler, RoutingStrategies.Tunnel);
+			Deactivated += OnWindowDeactivated;
 		}
 
 		private void GetWindowSize()
@@ -258,7 +261,7 @@ namespace SBC.WPF.Views
 		private async void Exit_Click(object? sender, RoutedEventArgs e)
 		{
 			//to change hamburger button icon
-			_mainWindowViewModel.OpenHamburgerCommand.Execute(null); 
+			_mainWindowViewModel.ToggleHamburgerCommand.Execute(null); 
 
 			if (_confirmedExit) return;
 
@@ -275,6 +278,28 @@ namespace SBC.WPF.Views
 			{
 				_confirmedExit = true;
 				this.Close();
+			}
+		}
+
+		private void OutsideClickHandler(object? sender, PointerPressedEventArgs e)
+		{
+			// If click is not inside the hamburger button
+			if (e.Source is not Control sourceControl ||
+				!HamburgerButton.IsVisualAncestorOf(sourceControl) &&
+				HamburgerButton != sourceControl)
+			{
+				if (DataContext is MainWindowViewModel vm)
+				{
+					vm.ResetHamburgerState();
+				}
+			}
+		}
+
+		private void OnWindowDeactivated(object? sender, EventArgs e)
+		{
+			if (DataContext is MainWindowViewModel vm)
+			{
+				vm.ResetHamburgerState();
 			}
 		}
 	}

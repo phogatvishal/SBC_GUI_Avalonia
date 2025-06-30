@@ -32,16 +32,17 @@
                 HorizontalAlignment="Left"
                 Source="{StaticResource icons_LFT_logoDrawingImage}" />
             <TextBlock
-                Margin="10,0"
+                Margin="5,0,0,0"
                 VerticalAlignment="Center"
                 FontSize="16"
                 Foreground="White"
                 Text="Connection Settings" />
 
             <Button
-                Width="35"
+                Width="40"
                 Height="35"
-                Margin="235,0,0,0"
+                Margin="160,0,8,0"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 Background="Transparent"
                 BorderThickness="0"
@@ -128,18 +129,21 @@
             </StackPanel>
 
             <StackPanel
-                MinHeight="50"
+                Height="50"
                 MaxHeight="50"
                 VerticalAlignment="Center"
                 Orientation="Horizontal"
                 Spacing="5">
                 <TextBlock
                     Width="120"
-                    Margin="0,0,0,10"
+                    Margin="0,20,0,10"
                     VerticalAlignment="Center"
                     Text="Destination IP" />
 
-                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <StackPanel
+                    Margin="0,16,0,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
                     <!--  IP Part 1  -->
                     <StackPanel>
                         <TextBox
@@ -220,19 +224,23 @@
             </StackPanel>
 
             <StackPanel
-                MinHeight="50"
+                Height="50"
                 MaxHeight="50"
-                Margin="0,5,0,5"
+                Margin="0,3,0,5"
+                VerticalAlignment="Center"
                 Orientation="Horizontal">
                 <TextBlock
                     Width="120"
+                    Margin="0,11,0,0"
                     VerticalAlignment="Center"
                     Text="Port" />
                 <StackPanel VerticalAlignment="Center">
                     <TextBox
                         Name="PortTextBox"
                         Width="270"
-                        Margin="5,0,0,0"
+                        MinHeight="30"
+                        MaxHeight="30"
+                        Margin="5,13,0,0"
                         Classes="myStyled"
                         MaxLength="5"
                         Text="{Binding SelectedPortText, Mode=TwoWay}"
@@ -248,7 +256,7 @@
 
             </StackPanel>
 
-            <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
                 <TextBlock
                     Width="120"
                     VerticalAlignment="Center"

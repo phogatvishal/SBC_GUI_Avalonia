@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using SBC.WPF.Enums;
+using System.Threading;
 
 namespace SBC.WPF.ViewModels
 {
@@ -29,6 +30,7 @@ namespace SBC.WPF.ViewModels
 		private readonly ILoggerService _logger;
 		private APILogView apiLogView;
 		private bool _isHamburgerSelected = false;
+		private CancellationTokenSource? _cts;
 
 		[ObservableProperty]
 		private bool _isNavCollapsed;
@@ -68,6 +70,8 @@ namespace SBC.WPF.ViewModels
 		[ObservableProperty]
 		private DrawingImage? hamburgerIcon;
 
+		[ObservableProperty]
+		private bool _isRunning;
 
 		public MainWindowViewModel(ITestLoaderService testLoaderService, ISBCInteropService interopService, IServiceProvider serviceProvider,
 			ILoggerService logger, IExceptionHandlerService exceptionHandler)
@@ -118,9 +122,13 @@ namespace SBC.WPF.ViewModels
 			SelectedTestGroup = TestGroups.FirstOrDefault();
 		}
 
-		[RelayCommand]
 		private async Task RunTestAsync()
 		{
+			_cts = new CancellationTokenSource();
+			var token = _cts.Token;
+			IsRunning = true;
+			OnPropertyChanged(nameof(IsRunning));
+
 			try
 			{
 				if (SelectedTestGroup == null)
@@ -140,19 +148,30 @@ namespace SBC.WPF.ViewModels
 				Log($"Bit Mask: {bitMask}{Environment.NewLine}");
 
 				bool retryAttempted = false;
+				int currentIteration = 1;
 
-				for (int i = 1; i <= SelectedIteration; i++)
+				while (currentIteration <= SelectedIteration)
 				{
-					Log($"[Iteration {i}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...{Environment.NewLine}");
-					await Task.Delay(10); // Let UI update
+					if (token.IsCancellationRequested)
+					{
+						Log($"⚠️ Test execution cancelled at iteration {currentIteration}.");
+						break;
+					}
+
+					Log($"[Iteration {currentIteration}] Running {selectedTests.Count} test(s) from '{SelectedTestGroup.Name}'...{Environment.NewLine}");
+					await Task.Delay(10, token); // Let UI update
 
 					foreach (var test in selectedTests)
 					{
-						Log($"  - Executing: {test.Name}{Environment.NewLine}");
-						await Task.Delay(1); // Simulate small delay
-					}
+						if (token.IsCancellationRequested)
+						{
+							Log("⚠️ Test execution cancelled.");
+							break;
+						}
 
-					Log("Test execution finished.");
+						Log($"Executed: {test.Name}");
+						await Task.Delay(1, token); // Simulate delay
+					}
 
 					try
 					{
@@ -163,28 +182,69 @@ namespace SBC.WPF.ViewModels
 
 						Log(result.ToString());
 						UpdateTestResults(result.ToString(), SelectedTestGroup.Testcases);
+
+						currentIteration++;
 					}
 					catch (Exception ex)
 					{
-						var userChoice = await _exceptionHandler.ShowExceptionDialogAsync("Test Execution Error",
-							"An error occurred while running the test.", ex.ToString(), canRetry: !retryAttempted); // only show Retry button on first failure
+						var userChoice = await _exceptionHandler.ShowExceptionDialogAsync(
+							"Test Execution Error",
+							"An error occurred while running the test.",
+							ex.ToString(),
+							canRetry: !retryAttempted);
 
 						if (userChoice == ExceptionDialogResult.Retry && !retryAttempted)
 						{
 							retryAttempted = true;
-							i--; // retry current iteration
 							continue;
 						}
-
-						break; // exit loop on failure or after retry used
+						break;
 					}
 				}
+			}
+			catch (OperationCanceledException)
+			{
+				Log($"⚠️ Test execution cancelled by user. {Environment.NewLine}");
 			}
 			catch (Exception ex)
 			{
 				await _exceptionHandler.ShowExceptionDialogAsync("Critical Error",
-					"An unexpected error occurred while starting the test.", ex.ToString(), canRetry: false);
+					"An unexpected error occurred while starting the test.",
+					ex.ToString(),
+					canRetry: false);
 			}
+			finally
+			{
+				IsRunning = false;
+				_cts?.Dispose();
+				_cts = null;
+				OnPropertyChanged(nameof(IsRunning));
+			}
+		}
+
+		partial void OnIsRunningChanged(bool value)
+		{
+			OnPropertyChanged(nameof(RunStopButtonText));
+		}
+
+		public string RunStopButtonText => IsRunning ? "Stop" : "Run";
+
+		[RelayCommand(AllowConcurrentExecutions = true)]
+		private async Task ToggleTestAsync()
+		{
+			if (IsRunning)
+			{
+				StopTest();
+			}
+			else
+			{
+				await RunTestAsync();
+			}
+		}
+
+		private void StopTest()
+		{
+			_cts?.Cancel();
 		}
 
 		private void UpdateTestResults(string resultData, IEnumerable<TestCase> testCases)
@@ -354,7 +414,7 @@ namespace SBC.WPF.ViewModels
 				string chmPath = Path.Combine(basePath, "SBC.chm");
 				string pdfPath = Path.Combine(basePath, "SBC.pdf");
 
-				OpenHamburger();
+				ToggleHamburger();
 
 				// Windows: Try to open .chm if it exists
 				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -420,7 +480,8 @@ namespace SBC.WPF.ViewModels
 				var mainWindow = desktop.MainWindow;
 				if (mainWindow is null)
 					return;
-				OpenHamburger();
+
+				ToggleHamburger();
 
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
@@ -456,7 +517,8 @@ namespace SBC.WPF.ViewModels
 					return;
 
 				var mainWindow = desktop.MainWindow;
-				OpenHamburger();
+
+				ToggleHamburger();
 
 				mainWindow.Effect = new BlurEffect { Radius = 0.5 };
 
@@ -494,16 +556,34 @@ namespace SBC.WPF.ViewModels
 		}
 
 		[RelayCommand]
+		private void ToggleHamburger()
+		{
+			if (_isHamburgerSelected)
+				ResetHamburgerState();
+			else
+				OpenHamburger();
+		}
+
 		private void OpenHamburger()
 		{
-			if (Application.Current?.TryFindResource(_isHamburgerSelected
-					? "icons_Sub_MenuDrawingImage" 
-					: "icons_Sub_Menu___SelectedDrawingImage", out var image) == true && image is DrawingImage drawing)
+			if (Application.Current?.TryFindResource("icons_Sub_Menu___SelectedDrawingImage", out var image) == true &&
+				image is DrawingImage drawing)
 			{
 				HamburgerIcon = drawing;
 			}
+			_isHamburgerSelected = true;
+			OnPropertyChanged(nameof(HamburgerIcon));
+		}
 
-			_isHamburgerSelected = !_isHamburgerSelected;
+		public void ResetHamburgerState()
+		{
+			if (Application.Current?.TryFindResource("icons_Sub_MenuDrawingImage", out var image) == true &&
+				image is DrawingImage drawing)
+			{
+				HamburgerIcon = drawing;
+			}
+			_isHamburgerSelected = false;
+			OnPropertyChanged(nameof(HamburgerIcon));
 		}
 	}
 }

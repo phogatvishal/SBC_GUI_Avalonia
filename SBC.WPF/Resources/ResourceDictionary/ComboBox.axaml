@@ -152,42 +152,11 @@
             </ControlTemplate>
         </Setter>
 
-
-        <!--  PointerOver State  -->
-        <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="WhiteSmoke" />
-        </Style>
-
-        <!--<Style Selector="^">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeColor}" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>-->
-
-        <!--  Pressed State  -->
-        <!--<Style Selector="^:pressed /template/ Border#Background">
-            <Setter Property="Background" Value="{DynamicResource ComboBoxBackgroundPressed}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderBrushPressed}" />
-        </Style>-->
-
         <!--  Error State  -->
         <Style Selector="^:error">
             <Setter Property="BorderBrush" Value="{DynamicResource SystemControlErrorTextForegroundBrush}" />
         </Style>
 
-        <!--  Focus Pressed State  -->
-        <Style Selector="^:focus">
-            <Style Selector="^ /template/ ContentControl#ContentPresenter">
-                <Setter Property="Foreground" Value="{DynamicResource ComboBoxForegroundFocusedPressed}" />
-            </Style>
-            <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource ComboBoxPlaceHolderForegroundFocusedPressed}" />
-            </Style>
-            <!--<Style Selector="^ /template/ PathIcon#DropDownGlyph">
-                <Setter Property="Foreground" Value="{DynamicResource ComboBoxDropDownGlyphForegroundFocusedPressed}" />
-            </Style>-->
-        </Style>
 
         <!--  Disabled State  -->
         <Style Selector="^:disabled">

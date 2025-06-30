@@ -327,8 +327,8 @@
                 <Button
                     HorizontalAlignment="Right"
                     Classes="run-style"
-                    Command="{Binding RunTestCommand}"
-                    Content="Run" />
+                    Command="{Binding ToggleTestCommand}"
+                    Content="{Binding RunStopButtonText}" />
 
                 <StackPanel
                     Grid.Column="1"
@@ -427,11 +427,12 @@
 
                 <!--  Hamburger Menu Button  -->
                 <Button
-					Width="34"
+                    Name="HamburgerButton"
                     Grid.Column="3"
+                    Width="34"
                     Margin="0,0"
                     VerticalAlignment="Center"
-                    Command="{Binding OpenHamburgerCommand}"
+                    Command="{Binding ToggleHamburgerCommand}"
                     Cursor="Hand">
 
                     <Button.Template>
