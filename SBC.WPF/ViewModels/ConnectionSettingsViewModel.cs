@@ -42,9 +42,7 @@ namespace SBC.WPF.ViewModels
 
 		public int? SelectedPort { get; private set; }
 		public string SelectedIP => $"{IPPart1}.{IPPart2}.{IPPart3}.{IPPart4}";
-
 		public string Error => null!;
-
 		public string PortError => this[nameof(SelectedPortText)];
 		public bool IsPortTextNotEmpty => !string.IsNullOrWhiteSpace(PortError);
 
@@ -52,7 +50,6 @@ namespace SBC.WPF.ViewModels
 		public string IPPart2Error => this[nameof(IPPart2)];
 		public string IPPart3Error => this[nameof(IPPart3)];
 		public string IPPart4Error => this[nameof(IPPart4)];
-
 		public bool HasIPPart1Error => !string.IsNullOrWhiteSpace(IPPart1Error);
 		public bool HasIPPart2Error => !string.IsNullOrWhiteSpace(IPPart2Error);
 		public bool HasIPPart3Error => !string.IsNullOrWhiteSpace(IPPart3Error);
@@ -168,13 +165,12 @@ namespace SBC.WPF.ViewModels
 					SelectedProtocol = SelectedProtocol
 				};
 
-				SettingsService.SaveSettings(settings);
 
 				if (_mainWindowViewModel.IsSerialConnected)
-					_interopService.Connect(InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
+					_interopService.Connect(Enums.InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
 
 				if (_mainWindowViewModel.IsEthernetConnected)
-					_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
+					_interopService.Connect(Enums.InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
 
 				await ShowConfirmDialog("Settings Applied", "Your settings were successfully applied.");
 			}
@@ -194,10 +190,10 @@ namespace SBC.WPF.ViewModels
 				bool ethernet = TestEthernetConnection(SelectedIP, SelectedPort, SelectedProtocol);
 
 				if (serial)
-					_interopService.Connect(InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
+					_interopService.Connect(Enums.InterfaceConnection.INTERFACE_UART, SelectedComPort, SelectedBaudRate, null);
 
 				if (ethernet)
-					_interopService.Connect(InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
+					_interopService.Connect(Enums.InterfaceConnection.INTERFACE_ETHERNET, SelectedIP, 0, SelectedProtocol);
 
 				SerialStatusColor = serial ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
 				EthernetStatusColor = ethernet ? new SolidColorBrush(Color.Parse("#00BF10")) : Brushes.Red;
@@ -235,18 +231,29 @@ namespace SBC.WPF.ViewModels
 			vm.Message = message;
 			vm.ShowYesNo = false;
 			vm.ShowOk = true;
-
 			dialog.DataContext = vm;
 
-			if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
-				desktop.MainWindow is Window owner)
+			var tracker = _serviceProvider.GetRequiredService<IWindowTrackerService>();
+			var owner = tracker.ActiveConnectionWindow;
+
+			dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+			dialog.ShowInTaskbar = false;
+
+			if (owner is not null)
 			{
-				owner.IsEnabled = false;
-
-				await dialog.ShowDialog(owner);
-
-				owner.IsEnabled = true;
+				await dialog.ShowDialog(owner); // this sets the internal Owner
 			}
+			else if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+					 desktop.MainWindow is Window fallbackOwner)
+			{
+				await dialog.ShowDialog(fallbackOwner);
+			}
+			else
+			{
+				await dialog.ShowDialog(null);
+			}
+
+			dialog.Activate(); // Optional focus restore
 		}
 	}
 }

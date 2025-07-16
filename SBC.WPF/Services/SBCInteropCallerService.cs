@@ -37,12 +37,12 @@ namespace SBC.WPF.Services
 			_logger.APILog(logBuilder.ToString());
 		}
 
-		public void Connect(InterfaceConnection interfaceType, string? comPortOrIp, int baudRateOrPort, string? protocol)
+		public void Connect(Enums.InterfaceConnection interfaceType, string? comPortOrIp, int baudRateOrPort, string? protocol)
 		{
 			try
 			{
 				LogCall(nameof(Connect), $"{interfaceType}, {comPortOrIp}, {baudRateOrPort}, {protocol}");
-				_interop.Connect(interfaceType, comPortOrIp, baudRateOrPort, protocol);
+				_interop.Connect((InterfaceConnection)interfaceType, comPortOrIp, baudRateOrPort, protocol);
 			}
 			catch (Exception ex)
 			{
@@ -51,12 +51,12 @@ namespace SBC.WPF.Services
 			}
 		}
 
-		public void Disconnect(InterfaceConnection interfaceType)
+		public void Disconnect(Enums.InterfaceConnection interfaceType)
 		{
 			try
 			{
 				LogCall(nameof(Disconnect), $"{interfaceType}");
-				_interop.Disconnect(interfaceType);
+				_interop.Disconnect((InterfaceConnection)interfaceType);
 			}
 			catch (Exception ex)
 			{
@@ -65,12 +65,12 @@ namespace SBC.WPF.Services
 			}
 		}
 
-		public int GetConnectionStatus(InterfaceConnection interfaceType)
+		public int GetConnectionStatus(Enums.InterfaceConnection interfaceType)
 		{
 		    try
             {
                 LogCall(nameof(GetConnectionStatus), $"{interfaceType}");
-                var result = _interop.GetConnectionStatus(interfaceType);
+				var result = _interop.GetConnectionStatus((InterfaceConnection)interfaceType);
                 LogCall(nameof(GetConnectionStatus), $"{interfaceType}", result.ToString());
                 return result;
             }
@@ -81,14 +81,14 @@ namespace SBC.WPF.Services
             }
 		}
 
-		public HWVersion GetHWVersion(InterfaceConnection interfaceType)
+		public Enums.HWVersion GetHWVersion(Enums.InterfaceConnection interfaceType)
 		{
 			try
 			{
 				LogCall(nameof(GetHWVersion), $",{interfaceType}");
-				_interop.GetHWVersion(interfaceType, out var hwVersion);
+				_interop.GetHWVersion((InterfaceConnection)interfaceType, out var hwVersion);
 				LogCall(nameof(GetHWVersion), $",{interfaceType}", hwVersion.ToString());
-				return hwVersion;
+				return (Enums.HWVersion)hwVersion;
 			}
 			catch (Exception ex)
 			{
@@ -97,12 +97,12 @@ namespace SBC.WPF.Services
 			}
 		}
 
-		public string GetVersionInfo(InterfaceConnection interfaceType, VersionInfo versionType)
+		public string GetVersionInfo(Enums.InterfaceConnection interfaceType, Enums.VersionInfo versionType)
 		{
 			try
 			{
 				LogCall(nameof(GetVersionInfo), $"{interfaceType}, {versionType}");
-				_interop.GetVersionInfo(interfaceType, versionType, out var version);
+				_interop.GetVersionInfo((InterfaceConnection)interfaceType, (VersionInfo)versionType, out var version);
 				LogCall(nameof(GetVersionInfo), $"{interfaceType}, {versionType}", version);
 				return version;
 			}
@@ -113,13 +113,13 @@ namespace SBC.WPF.Services
 			}
 		}
 
-	    public string RunTest(InterfaceConnection interfaceType, Group group, int subTest)
+	    public string RunTest(Enums.InterfaceConnection interfaceType, Enums.Group group, int subTest)
         {
             try
             {
                 string hexValue = $"0x{subTest:X}";
                 LogCall(nameof(RunTest), $"{group}, {hexValue}");
-                _interop.RunTest(interfaceType, group, subTest, out var log);
+                _interop.RunTest((InterfaceConnection)interfaceType, (Group)group, subTest, out var log);
                 LogCall(nameof(RunTest), $"{group}, {hexValue}", log);
                 return log;
             }

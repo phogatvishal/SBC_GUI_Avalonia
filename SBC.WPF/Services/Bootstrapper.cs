@@ -5,6 +5,8 @@ using SBC.WPF.Interfaces;
 using SBC.WPF.ViewModels;
 using SBC.WPF.Views;
 using System;
+using SBC.WPF.LinuxInterop;
+using System.Runtime.InteropServices;
 
 namespace SBC.WPF.Services
 {
@@ -29,6 +31,7 @@ namespace SBC.WPF.Services
 		{
 			services.AddTransient<MainWindow>();
 			services.AddSingleton<MainWindowViewModel>();
+			services.AddSingleton<IWindowTrackerService, WindowTrackerService>();
 			services.AddTransient<ConnectionSettingsView>();
 			services.AddTransient<ConnectionSettingsViewModel>();
 			services.AddTransient<APILogView>();
@@ -36,8 +39,25 @@ namespace SBC.WPF.Services
 			services.AddSingleton<ITestLoaderService, TestLoaderService>();
 			services.AddSingleton<ISBCInteropService>(provider =>
 			{
-				var logger = provider.GetRequiredService<ILoggerService>();
-				return new SBCInteropCallerService(new CInterface(), logger);
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				{
+					var logger = provider.GetRequiredService<ILoggerService>();
+					return new SBCInteropCallerService(new SBC.CInterface(), logger);
+				}
+				else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+				{
+					var logger = provider.GetRequiredService<ILoggerService>();
+
+					var uart = new SBCNativeInterface(Enums.InterfaceConnection.INTERFACE_UART);
+					var ethernet = new SBCNativeInterface(Enums.InterfaceConnection.INTERFACE_ETHERNET);
+
+					return new LinuxInteropService(uart, ethernet, logger);
+				}
+				else
+				{
+					var platform = RuntimeInformation.OSDescription;
+					throw new PlatformNotSupportedException($"Platform not supported: {platform}");
+				}
 			});
 			services.AddTransient<ExceptionDialog>();
 			services.AddSingleton<IExceptionHandlerService, ExceptionHandlerService>();

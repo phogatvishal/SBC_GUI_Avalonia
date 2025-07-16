@@ -85,9 +85,6 @@ namespace SBC.WPF.ViewModels
 			
 			_ = Initialize();
 
-			_interopService.Connect(
-			InterfaceConnection.INTERFACE_ETHERNET, "COM3", 115200, "MyProtocol");
-
 			if (Application.Current?.TryFindResource("icons_Sub_MenuDrawingImage", out var image) == true && image is DrawingImage drawing)
 			{
 				HamburgerIcon = drawing;
@@ -180,8 +177,19 @@ namespace SBC.WPF.ViewModels
 							GetGroupFromTestType(SelectedTestGroup.Type),
 							bitMask);
 
-						Log(result.ToString());
-						UpdateTestResults(result.ToString(), SelectedTestGroup.Testcases);
+						Log(result);
+						UpdateTestResults(result, SelectedTestGroup.Testcases);
+
+						// 🔍 Count PASS/FAIL from log
+						int passCount = 0, failCount = 0;
+						foreach (var line in result.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
+						{
+							if (line.Contains(": PASS", StringComparison.OrdinalIgnoreCase)) passCount++;
+							if (line.Contains(": FAIL", StringComparison.OrdinalIgnoreCase)) failCount++;
+						}
+
+						Log($"Summary: {passCount} Passed, {failCount} Failed");
+						Log($"✅ Test execution finished: Iteration {currentIteration}\n\n");
 
 						currentIteration++;
 					}
@@ -221,6 +229,8 @@ namespace SBC.WPF.ViewModels
 				OnPropertyChanged(nameof(IsRunning));
 			}
 		}
+
+
 
 		partial void OnIsRunningChanged(bool value)
 		{
@@ -329,22 +339,22 @@ namespace SBC.WPF.ViewModels
 			_logger.ClearCurrentLogs();
 		}
 
-		private InterfaceConnection GetConnectionFromType(string type)
+		private Enums.InterfaceConnection GetConnectionFromType(string type)
 		{
-			if (Enum.TryParse<InterfaceConnection>(type, out var result))
+			if (Enum.TryParse<Enums.InterfaceConnection>(type, out var result))
 			{
 				return result;
 			}
 
-			return InterfaceConnection.INTERFACE_UNKNOWN;
+			return Enums.InterfaceConnection.INTERFACE_UNKNOWN;
 		}
-		private Group GetGroupFromTestType(string type)
+		private Enums.Group GetGroupFromTestType(string type)
 		{
-			if (Enum.TryParse<Group>(type, out var result))
+			if (Enum.TryParse<Enums.Group>(type, out var result))
 			{
 				return result;
 			}
-			return Group.Group_Interface;
+			return Enums.Group.Group_Interface;
 		}
 
 		public int GetTestBitmask(string groupType)
@@ -369,7 +379,7 @@ namespace SBC.WPF.ViewModels
 			try
 			{
 				//UARTRESULT
-				var UARTresult = _interopService.GetConnectionStatus(InterfaceConnection.INTERFACE_UART);
+				var UARTresult = _interopService.GetConnectionStatus(Enums.InterfaceConnection.INTERFACE_UART);
 
 				await Task.Delay(10);
 
@@ -377,7 +387,7 @@ namespace SBC.WPF.ViewModels
 					IsSerialConnected = true;
 
 				//ETHERNET
-				var Ethernetresult = _interopService.GetConnectionStatus(InterfaceConnection.INTERFACE_ETHERNET);
+				var Ethernetresult = _interopService.GetConnectionStatus(Enums.InterfaceConnection.INTERFACE_ETHERNET);
 
 				await Task.Delay(10);
 
@@ -490,14 +500,23 @@ namespace SBC.WPF.ViewModels
 				{
 					await _exceptionHandler.ShowExceptionDialogAsync(
 						"Error", "Could not load Connection Settings view.", canRetry: false);
+					mainWindow.Effect = null;
 					return;
 				}
+
+				// Assign active window to tracker
+				var windowTracker = _serviceProvider.GetRequiredService<IWindowTrackerService>();
+				windowTracker.ActiveConnectionWindow = connectionSettingsView;
 
 				if (connectionSettingsView.DataContext is ConnectionSettingsViewModel vm)
 				{
 					vm.RefreshCOMPorts();
 				}
+
 				await connectionSettingsView.ShowDialog(mainWindow);
+
+				// Clear the tracked reference on close
+				windowTracker.ActiveConnectionWindow = null;
 
 				mainWindow.Effect = null;
 			}

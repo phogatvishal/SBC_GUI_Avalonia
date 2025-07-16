@@ -1,0 +1,5 @@
+HKCR 
+{ 
+  NoRemove 'SBCLib.CInterface.1' { CLSID = s '{a9f691c5-ac1c-4206-a250-3a11c5782955}' } 
+  NoRemove 'SBCLib.CInterface' { CLSID = s '{a9f691c5-ac1c-4206-a250-3a11c5782955}' } 
+}

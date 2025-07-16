@@ -112,4 +112,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Interop.SBC">
+      <HintPath>..\lib\Interop.SBC.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <Aliases>global</Aliases>
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
 </Project>

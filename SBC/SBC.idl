@@ -1,0 +1,52 @@
+// SBC.idl : IDL source for SBC
+//
+
+import "oaidl.idl";
+import "ocidl.idl";
+#include "devdefs.h"
+
+[
+  object,
+  uuid(91e7c13d-e281-4797-b816-a25819cb1941),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+interface ICInterface : IDispatch
+{
+  [helpstring("Connect to the interface with specific parameters")]
+  HRESULT Connect([in] InterfaceConnection interfaceType, [in] BSTR comPortOrIp, [in] LONG baudRateOrPort, [in] BSTR protocol);
+
+  [helpstring("Disconnect from the interface")]
+  HRESULT Disconnect([in] InterfaceConnection interfaceType);
+
+  [helpstring("Get connection status")]
+  HRESULT GetConnectionStatus([in] InterfaceConnection interfaceType, [out, retval] BOOL* isConnected);
+
+  [helpstring("Get hardware version")]
+  HRESULT GetHWVersion([in] InterfaceConnection interfaceType, [out] HWVersion* hwVersion);
+
+  [helpstring("Get version information")]
+  HRESULT GetVersionInfo([in] InterfaceConnection interfaceType, [in] VersionInfo versionType, [out] BSTR* versionInfo);
+
+  [helpstring("Run a specific test or multiple tests can be tested of a Group")]
+  HRESULT RunTest([in] InterfaceConnection interfaceType, [in] Group group, [in] LONG subTest, [out] BSTR* logOutput);
+};
+
+[
+  uuid(0de9549c-be2e-4d13-9a56-31bf12508400),
+  version(1.0),
+]
+library SBCLib
+{
+  importlib("stdole2.tlb");
+  [
+    uuid(a9f691c5-ac1c-4206-a250-3a11c5782955)
+  ]
+  coclass CInterface
+  {
+    [default] interface ICInterface;
+  };
+};
+
+import "shobjidl.idl";

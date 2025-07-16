@@ -1,14 +1,12 @@
-﻿using SBC.WPF.Enums;
-
-namespace SBC.WPF.Interfaces
+﻿namespace SBC.WPF.Interfaces
 {
 	public interface ISBCInteropService
 	{
-		void Connect(InterfaceConnection interfaceType, string? comPortOrIp, int baudRateOrPort, string? protocol);
-		void Disconnect(InterfaceConnection interfaceType);
-		int GetConnectionStatus(InterfaceConnection interfaceType);
-		HWVersion GetHWVersion(InterfaceConnection interfaceType);
-		string GetVersionInfo(InterfaceConnection interfaceType, VersionInfo versionType);
-		string RunTest(InterfaceConnection interfaceType, Group group, int subTest);
+		void Connect(Enums.InterfaceConnection interfaceType, string? comPortOrIp, int baudRateOrPort, string? protocol);
+		void Disconnect(Enums.InterfaceConnection interfaceType);
+		int GetConnectionStatus(Enums.InterfaceConnection interfaceType);
+		Enums.HWVersion GetHWVersion(Enums.InterfaceConnection interfaceType);
+		string GetVersionInfo(Enums.InterfaceConnection interfaceType, Enums.VersionInfo versionType);
+		string RunTest(Enums.InterfaceConnection interfaceType, Enums.Group group, int subTest);
 	}
 }
